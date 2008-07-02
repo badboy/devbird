@@ -1,0 +1,50 @@
+Devbird v0.1.1 - Release: soon ;)
+------------------------------------------------------------
+ by BadBoy_
+
+-- License --
+ GNU GENERAL PUBLIC LICENSE v2
+ (siehe LICENSE)
+
+-- Was ist Devbird? --
+Devbird ist ein in PHP geschriebenes, vollwertiges aber schlankes Blogsystem.
+
+-- Für wen ist Devbird geeignet? --
+Devbird ist ein vollwertiges Blogsystem.
+
+Trotzdem ist es recht schlank. Aber es fehlen auch bekannte Features wie Trackback-URLs oder ein WYSIWYG-Editor.
+
+Deshalb ist Devbird gerade für die Leute gedacht, die auf diesen Schnickschnack verzichten können. Obwohl ich versucht habe, die Installation und Nutzung so einfach wie möglich zu halten, muss hier und da trotzdem noch ein bisschen Hand angelegt werden. Auch deshalb ist es eher was für die erfahrenen User.
+
+-- Wer hat Devbird geschrieben? --
+Ich, auch bekannt als BadBoy_. Mein richtiger Name ist Jan-Erik und ich bin 16 Jahre alt.
+
+Nachdem ich 2007 mein erstes Blogsystem zusammengeschustert habe, kam mir die Idee das ganze besser aufzuteilen.
+Ich wollte Code und Design strikter trennen und so die Pflege des Systems vereinfachen.
+Daraus entstanden ist dann Devbird.
+Mein Blog => http://badboy.pytalhost.de/
+
+-- Was mach ich nun damit? --
+Installieren.
+Lade den Ordner Devbird (oder zumindest den kompletten Inhalt) auf deinen Webspace hoch.
+Dann gehe sicher, dass du PHP5, mod_rewrite und mysqli hast.
+Rufe im Browser die Url auf: http://deineadresse.de/devbird/install (oder ohne /devbird/, wenn du nur die Dateien hochgeladen hast).
+Dann folge den Anweisungen des Installationsskript.
+
+Du hast nichts verstanden, von dem was ich hier drüber erklärt habe?
+ Na, dann ist Devbird vielleicht doch nichts für dich.
+ Schau dir halt mal Wordpress [http://wordpress-deutschland.org/] oder b2evolution [http://b2evolution.net/] an.
+ Wenn du auch damit nicht klar kommst, solltest du dir vielleicht das Grundwissen über Blogs zulegen.
+  => http://de.wikipedia.org/wiki/Blog
+
+-- Dir gefällt aber der Name mal so garnicht? --
+Tjoa...Geschmäcker sind verschieden.
+Aber neuen Vorschlägen gegenüber bin ich nicht abgeneigt.
+
+-- Danke --
+och, da gibt's soviele, die mir aktiv oder passiv geholfen haben.
+die alle aufzuzählen wird viel.
+ aber auf jedenfall danken möchte ich Atsutane, mein erster Betatester :)
+ dann noch Psyko, für das tolle Design (und für das hoffentlich bald neue :D)
+ allen Pytalern, die mir ab und zu hier und da geholfen haben
+ dem ganzen Rest, allen Machern von den Webseiten, wo ich mir Anregungen und Tipps geholt habe, und, und, und.
