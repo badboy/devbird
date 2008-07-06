@@ -1,0 +1,53 @@
+Devbird Editor - BBCodes Cheatsheet
+-----------------------------------
+(XXX == beliebiger Text)
+
+-----------------------------------
+__XXX__ oder [u]XXX[/u] Unterstrichen (deprecated!)
+**XXX** oder [b]XXX[/b] Fett
+//XXX// oder [i]XXX[/i] Italic
+[[url]] Url-Alternative
+[[url|titel]] Url-Alternative mit Titel
+[img]url[/img] Bild, normal
+[img]url[/img,x,y] Bild mit Größenangabe (Pixel)
+[img=gallerie]url[/img] Bild mit Gallerienamen (für Lightbox)
+[img=gallerie]url[/img,x,y] Bild mit Gallerienamen (für Lightbox) und mit Größenangabe (Pixel)
+
+== XXX == Überschrift 3. Ordnung
+=== XXX === Überschrift 4. Ordnung
+
+[code]XXX[/code] Syntaxhighlighting (eingestellte Standardsprache)
+[code=sprache]XXX[/code] Syntaxhighlighting mit Sprache
+
+Listen:
+Normal, ungeordnet
+[list]
+ [*]XXX
+[/list]
+
+Zahlen, geordnet
+[list=1]
+ [*]XXX
+[/list:o]
+
+Großbuchstaben, geordnet
+[list=A]
+ [*]XXX
+[/list:o]
+
+Kleinbuchstaben, geordnet
+[list=a]
+ [*]XXX
+[/list:o]
+
+Römische Zahlen, geordnet
+[list=I]
+ [*]XXX
+[/list:o]
+
+Im Editor für Unterseiten gibt es eine Besonderheit:
+{{newbox=title}} Damit kann man neue Textboxen definieren
+
+-----------------------------------
+Irgendein wichtiger BBCode ist nicht dabei?
+Kontaktiere mich (http://badboy.pytalhost.de), einbauen kann ich nahezu alles :)

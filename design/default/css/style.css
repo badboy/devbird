@@ -1,0 +1,130 @@
+#main {
+}
+#header {
+ float:left;
+ width:100%;
+ border-bottom: 1px solid gray;
+}
+#header h1 {
+ text-align: center;
+ font-size: 1.5em;
+}
+#navigation {
+
+ float:left;
+ width: 14%;
+}
+#navigation ul, #navigation li {
+ list-style-type:none;
+ margin-left:3px;
+ font-size:1.0em;
+}
+#navigation .navibox {
+ padding-left: 2px;
+ padding-bottom: 5px;
+ margin-bottom: 20px;
+}
+.navibox a:link, .navibox a:visited {
+ color:black;
+ text-decoration:none;
+}
+
+.navibox a:hover {
+ color:black;
+ text-decoration: underline;
+}
+
+.navibox li {
+ text-align:left;
+ cursor:pointer;
+}
+
+.navibox li:hover {
+ background: url(../images/menu_sub_orange.png) no-repeat 0 50%;
+ text-decoration: dotted;
+}
+
+#navigation h2 {
+ padding-left:30px;
+ margin:3px 0px 10px 0px;
+}
+
+#content {
+/* border: 1px solid black;*/
+ width: 85%;
+ float: right;
+ margin-top: 5px;
+ margin-right: 5px;
+ margin-bottom: 10px;
+}
+
+#content h1 {
+ margin-bottom:20px;
+ color:#444444;
+ text-align:center;
+ text-decoration:underline;
+}
+#content h2 {
+ font-size:0.95em;
+ display:inline;
+}
+#content .prev {
+ text-decoration:none;
+ font-size: 0.8em;
+ float:left;
+}
+#content .prev:hover {
+  color:#4D4D4D; 
+}
+#content .next {
+ text-decoration:none;
+ font-size: 0.8em;
+ float:right;
+}
+#content .next:hover {
+ color:#4D4D4D; 
+}
+
+#footer {
+ clear: both;
+ border-top:1px solid gray;
+ font-size:0.75em;
+ text-align:center;
+ padding:2px 0 2px 0;
+ padding-right: 0;
+}
+
+#footer #goup {
+ float:left;
+ padding-left:5px;
+/* padding-left:14px;
+ background: url(../images/16-arrow-up.png) no-repeat 0 50%;;*/
+}
+
+#footer #rss {
+ float:right;
+ margin-right: 10px;
+ padding: 0 19px 0 0;
+ background: url(../feed-icon-14x14.png) no-repeat 100% 50%;
+}
+
+fieldset {
+ border: 0;
+}
+
+.contact_input {
+ border:1px solid gray;
+ margin-bottom: 2px;
+}
+ 
+.contact_input:hover, .contact_input:focus {
+ border:1px solid black;
+}
+
+.tag_links a:link, .tag_links a:focus, .tag_links a:active, .tag_links a:focus, .tag_links a:visited {
+ text-decoration: underline;
+}
+
+.tag_links  a:hover {
+ text-decoration: none;
+}
