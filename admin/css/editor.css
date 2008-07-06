@@ -1,0 +1,24 @@
+.editor input, .editor textarea {
+ border: 1px solid gray;
+}
+
+.editor input:focus, .editor textarea:focus {
+ border: 1px solid black;
+}
+
+.editor .subinfo {
+ font-size: 0.85em;
+ padding-left: 30px;
+}
+.editor .article_text {
+ width: 700px;
+ height: 300px;
+}
+
+.editor  .insbutton {
+ background-image: url(../../images/button_bg.gif); 
+ margin: 1px 2px 1px 1px;
+}
+.editor .insbutton:hover {
+ background-image: url(../../images/button_hover_bg.gif);
+}

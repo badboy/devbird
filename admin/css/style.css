@@ -1,0 +1,206 @@
+#wrap {
+ border-top: 3px solid gray;
+}
+
+#header {
+}
+
+#header h1 {
+ font-size: 30px;
+ margin: 15px;
+}
+
+#navigation {
+ padding-top: 10px;
+ width: 100%;
+ text-align: center;
+ border-bottom: 1px dotted #777777;
+}
+
+#navigation ul,li {
+ list-style-type:none;
+ padding-left:3px;
+ font-size:13px;
+ display:inline;
+}
+
+#navigation .active_menu a:link,  #navigation .active_menu a:visited {
+ color: #E87830;
+}
+
+#navigation a:link, #navigation a:visited {
+ color:black;
+ text-decoration:none;
+ padding-right: 2px; 
+}
+
+#navigation a:hover {
+ text-decoration:underline;
+}
+
+#footer {
+ border-top: 1px dotted #777777;
+ font-size:0.7em;
+ text-align:center;
+}
+
+#footer #goup {
+ float:left;
+ padding-left:3px;
+}
+
+
+#content {
+ padding: 5px;
+ font-size: 0.9em;
+}
+
+#content h1 {
+ font-size: 1.3em;
+ text-align: center;
+ margin-bottom: 10px;
+}
+
+#content h2 {
+ font-size: 1.0em;
+ text-align: center;
+}
+
+#content a:link, #content a:visited {
+ color: #555599;
+ text-decoration: underline;
+}
+
+#content table {
+ width: 100%;
+ margin: 100;
+ padding: 0;
+}
+
+#content table a:link, #content table a:visited {
+ color: #777777;
+ text-decoration: none;
+}
+
+#content table a:hover {
+ color: black;
+}
+
+#content .close:link, #content .close:visited {
+ color: #AC5C56;
+}
+
+#content .close:hover {
+ color: red;
+}
+
+#content .open:link, #content .open:visited {
+ color: #009933;
+}
+
+#content .open:hover {
+ color: green;
+}
+
+#content table thead {
+
+}
+
+#content table th {
+ text-align: left;
+}
+
+#content .page_links {
+ text-align: center;
+}
+
+#content .page_links .page_now {
+ text-decoration:none;
+
+ border:1px solid #BBBBBB;
+ background-color:#D0D0D0; 
+
+ padding: 1px 2px 1px 2px;
+ margin-left:2px;
+ margin-right:2px;
+
+ font-size: 1.2em;
+ font-weight: bold
+}
+
+#content .page_links .page {
+ text-decoration:none;
+
+ color: black;
+ border:1px solid #BBBBBB;
+ background-color:#D0D0D0; 
+
+ padding: 1px 2px 1px 2px;
+ margin-left:2px;
+ margin-right:2px;
+
+ font-size: 0.9em;
+ font-weight: bold
+}
+
+#content table tr:hover, tr:active {
+ background-color: lightgray;
+}
+
+
+#content table tbody {
+ border: 1px solid black;
+}
+
+#content table td {
+/* width: 20%;*/
+ vertical-align: top;
+}
+
+#content fieldset {
+ border: 1px dotted black;
+ width: 80%;
+ padding: 5px;
+}
+
+#content fieldset .desc {
+ font-size: 0.8em;
+ margin-left: 10px;
+}
+
+#content .message {
+ text-align: center;
+ color: green;
+ font-weight: bold;
+}
+
+#content .error {
+ color: red;
+}
+
+.big_input {
+ width: 200px;
+}
+.bigger_input {
+ width: 300px;
+}
+
+.comment {
+ border: 1px solid black;
+ width: 80%;
+ padding: 5px;
+}
+.comment .comment_head {
+ border-bottom: 1px dotted black;
+ margin-bottom: 10px;
+}
+
+.comment_form .text {
+ width: 70%;
+ height: 200px;
+}
+
+.red_center {
+ text-align: center;
+ color: red;
+}

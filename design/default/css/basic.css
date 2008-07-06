@@ -1,0 +1,58 @@
+/* Webseite Reborn Again
+Start: So Dez 09 01:25:43 2007 
+
+Letzte Aenderung: So Dez 09 01:25:43 2007 
+*/
+
+/* Wichtige Farben
+ #F0F0F0; BG
+ #777777;
+*/
+/* DEFAULTS START */
+* { 
+ margin:0;
+ padding:0;
+ font-family:sans-serif;
+ font-size:0.98em;
+}
+body {
+ background-color: white;
+}
+
+h1, h2, h3, h4, h5, h6, ol, ul, li, dl, dt, dd, p, input, textarea, select {
+ font-family:sans-serif;
+ text-align:left;
+}
+p {
+ line-height: 1.4em;
+}
+ul, li {
+ padding:0; margin: 0;
+ list-style-type: none; position: relative;
+}
+img, a img {
+ border:0;
+}
+.clear { clear:both; }
+.none { display:none; }
+.leftalign { float:left; }
+.rightalign { float:right; }
+
+a:link {
+ color: black;
+}
+a:hover, a:active, a:focus {
+ color: black;
+ text-decoration:none;
+}
+a:visited {
+ color: black;
+}
+blockquote {
+ font-style: italic;
+ margin-left:20px;
+}
+q {
+ font-style: italic;
+}
+/* DEFAULTS END */
