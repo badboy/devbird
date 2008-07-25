@@ -7,7 +7,7 @@ require 'classes/user.class.php';
 
 class Devbird
 {
-	const Version = "0.2.0";
+	const Version = '0.2.1';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -33,6 +33,7 @@ class Devbird
 		date_default_timezone_set('Europe/Berlin');
 		define('IN_CORE', true);
 		require 'config/config.php';
+
 		$dbconfig = array(
 			'hostname'=> $mysql_hostname,
 			'username'=> $mysql_username,
@@ -41,9 +42,10 @@ class Devbird
 		);
 
 		$this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
-		if(!$this->DB)
+		if(mysqli_connect_errno())
 			die("Can't connect to database");
-		$res = $this->query("SELECT type, name, value FROM {settings}") or die($this->error());
+
+		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
 		{
 			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = $setting['value'];
@@ -87,7 +89,7 @@ class Devbird
 
 	function get_tags()
 	{
-		$sql = "SELECT tags FROM {news} WHERE published > 0";
+		$sql = 'SELECT tags FROM {news} WHERE published > 0';
 		$res = $this->query($sql, false);
 		$tags = array();
 		while($return = $res->fetch_object())
@@ -100,13 +102,13 @@ class Devbird
 			}
 		}
 
+		sort($tags);
 		return $tags;
 	}
 
 	function getnewsbytag($tag, $start=0,$limit=10)
 	{
-		$sql = "SELECT * FROM {news} WHERE published > 0 AND tags LIKE '%{$tag}%'ORDER BY created DESC"; #LIMIT $start, $limit
-		#echo $sql;
+		$sql = "SELECT * FROM {news} WHERE published > 0 AND tags LIKE '%{$tag}%'ORDER BY created DESC";
 		return $this->query($sql);
 	}
 
@@ -253,13 +255,15 @@ class Devbird
 	}
 
 
-// fetching functions!
 	function fetch_links()
 	{
 		while($roll = $this->nextlink())
 		{
+			$roll_link = stripslashes($roll->link);
+			$roll_desc = stripslashes($roll->desc);
+			$roll_name = stripslashes($roll->name);
 			$out = " <li>";
-			$out .= "<a href=\"{$this->rootpath}/{$roll->link}\" title=\"{$roll->desc}\">{$roll->name}</a>";
+			$out .= "<a href=\"{$this->rootpath}/{$roll_link}\" title=\"{$roll_desc}\">{$roll_name}</a>";
 			$out .= "</li>\n";
 			echo $out;
 		}
@@ -282,8 +286,11 @@ class Devbird
 	{
 		while($roll = $this->nextblogroll())
 		{
+			$roll_link = stripslashes($roll->link);
+			$roll_desc = stripslashes($roll->desc);
+			$roll_name = stripslashes($roll->name);
 			$out = " <li>";
-			$out .= "<a href=\"{$roll->link}\" title=\"{$roll->desc}\">{$roll->name}</a>";
+			$out .= "<a href=\"{$roll_link}\" title=\"{$roll_desc}\">{$roll_name}</a>";
 			$out .= "</li>\n";
 			echo $out;
 		}
@@ -583,7 +590,8 @@ class Devbird
 		}
 	}
 
-	function news_error($newsid, $type=0) // types: 0 => error, 1 => not found, else 404? or other
+        // types: 0 => error, 1 => not found, else 404? or other
+	function news_error($newsid, $type=0)
 	{
 		$Blog = $this;
 		$nouser = true;
@@ -737,7 +745,78 @@ class Devbird
 		}
 	}
 
-	function newsfeed()
+	function atomfeed()
+	{
+		session_cache_limiter('private');
+
+#		header("Pragma: public");
+#		header("Expires: 0");
+#		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Content-type: application/atom+xml");
+#		header("Content-Transfer-Encoding: binary");
+
+		$feed_title = $this->settings['Blogname'];
+		$feed_link = $this->settings['Bloglink'];
+		$feed_desc = $this->settings['Blogbeschreibung'];
+
+		$user = 'devbird';
+		$userq = $this->query("SELECT name FROM {user} WHERE id = '1'");
+		if($userq)
+		{
+			if($userr = $userq->fetch_object())
+				$user = $userr->name;
+		}
+
+		echo "<?xml version=\"1.0\" encoding=\"{$this->encoding}\" ?>\n";
+		echo "<feed xmlns=\"http://www.w3.org/2005/Atom\">\n";
+		echo " <title>{$feed_title}</title>\n";
+		echo " <link rel=\"alternate\" type=\"text/html\" href=\"{$feed_link}\"/>\n";
+		echo " <link rel=\"self\" type=\"application/atom+xml\" href=\"{$feed_link}/feed/atom\" />\n";
+		echo " <author>\n";
+		echo "  <name>{$user}</name>\n";
+		echo " </author>\n";
+		echo " <id>{$feed_link}</id>\n";
+		echo " <generator uri=\"http://www.badboy.pytalhost.de/\" version=\"".Devbird::Version."\">Devbird</generator>\n";
+		$result = $this->getnews(0, 1);
+		$rr;
+		$date = $this->date3339();
+		if($result && $result->num_rows > 0 && ($rr = $result->fetch_object()) )
+		{
+			$date = $this->date3339($rr->published);
+		}
+		echo " <updated>{$date}</updated>\n";
+		echo "\n";
+
+		$result = $this->getnews(0, 10);
+		if(!$result) {
+			$this->atomfeed_error(0);
+		}
+		elseif($result->num_rows == 0) {
+			$this->atomfeed_error(1);
+		}
+		else {
+
+			while(($news = $this->nextnews()))
+			{
+				$title = stripslashes($news->title);
+				$date = $this->date3339($news->published);
+				$content = stripslashes($news->message);
+				$id = $news->id;
+				$url = $this->rootpath.'/'.$id.'/'.$this->shorttext($title);
+
+				echo " <entry>\n";
+				echo "  <title>{$title}</title>\n";
+				echo "  <link href=\"{$url}\"/>\n";
+				echo "  <id>{$url}</id>\n";
+				echo "  <updated>{$date}</updated>\n";
+				echo "  <content type=\"html\">\n<![CDATA[\n{$content}\n]]>\n</content>\n";
+				echo " </entry>\n";
+			}
+		}
+		echo "</feed>";
+	}
+
+	function rssfeed()
 	{
 		session_cache_limiter('private');
 
@@ -765,10 +844,10 @@ class Devbird
 
 		$result = $this->getnews(0, 10);
 		if(!$result) {
-			$this->feed_error(0);
+			$this->rssfeed_error(0);
 		}
 		elseif($result->num_rows == 0) { 
-			$this->feed_error(1); 
+			$this->rssfeed_error(1);
 		}
 		else {
 
@@ -820,7 +899,43 @@ class Devbird
 	}
 
 private
-	function feed_error($type)
+	function date3339($timestamp=0)
+	{
+		if(!$timestamp)
+		{
+			$timestamp = time();
+		}
+		$date = date('Y-m-d\TH:i:s', $timestamp);
+		$tz = date('O', $timestamp);
+
+		return $date.substr($tz, 0, 3).':'.substr($tz, 3);
+	}
+
+	function rssfeed_error($type)
+	{
+		$date = date("d.m.Y - H:i");
+
+		if($type != 1) # error
+		{
+			$title = 'Ein Fehler ist aufgetreten';
+			$content = "Leider ist beim Aufruf ein Fehler aufgetreten.<br /><br />\nBitte versuche es später noch einmal.<br />\nSollte es dann noch immer nicht funktioniern, kontaktiere mich doch einfach über das <a href=\"{$this->rootpath}/contact\">Kontaktformular</a>.<br />\nEine kleine Info, wie du zu dem Fehler gekommen bist, könnte mir helfen das Problem zu beseitigen.";
+		}
+		else # type = 1
+		{
+			$title = 'Kein Eintrag gefunden';
+			$content = "Leider wurde kein Eintrag gefunden.<br /><br />\nBist du vielleicht einem fehlerhaften Link gefolgt?<br />\nDann kontaktiere mich doch gleich über das <a href=\"{$this->rootpath}/contact\">Kontaktformular</a>.<br />\nEine kleine Info, wie du zu dem Fehler gekommen bist, könnte mir helfen das Problem zu beseitigen.";
+		}
+
+		echo " <item>\n";
+		echo "  <title>{$title}</title>\n";
+		echo "  <description>\n<![CDATA[\n{$content}\n]]>\n</description>\n";
+		echo "  <link>{$this->rootpath}</link>\n";
+		echo "  <guid>{$this->rootpath}</guid>\n";
+		echo "  <pubDate>{$date}</pubDate>\n";
+		echo " </item>\n";
+	}
+
+	function atomfeed_error($type)
 	{
 		$date = date("d.m.Y - H:i");
 

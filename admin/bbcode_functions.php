@@ -46,11 +46,8 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
 # $str = eregi_replace("\n", "<br />\n", $str);
 # $str = eregi_replace("</p><p>", "</p>\n<p>", $str);
 
- if($extendedbbcode)
- {
-   $str = eregi_replace("=== ([^=]+) ===(<br />)?", "</p>\n<h4>\\1</h4>\n<p>", $str);
-   $str = eregi_replace("== ([^=]+) ==(<br />)?", "</p>\n<h3>\\1</h3>\n<p>", $str);
- }
+  $str = eregi_replace("=== ([^=]+) ===(<br />)?", "</p>\n<h4>\\1</h4>\n<p>", $str);
+  $str = eregi_replace("== ([^=]+) ==(<br />)?", "</p>\n<h3>\\1</h3>\n<p>", $str);
 
 
 # $str = eregi_replace("_{([^}]+)}", "<sub>\\1</sub>", $str);
@@ -76,20 +73,11 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
  $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" alt=\"\\3\" /></a>", $str); // bild
  $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img,([0-9]+),([0-9]+)\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" style=\"width:\\4px;height:\\5px\" alt=\"\\3\" /></a>", $str); // bild mit größe
 
-if($extendedbbcode)
-{
 // links
  $str = preg_replace("/\[\[(.+?)\|(.+?)\]\]/", "<a href=\"\\1\">\\2</a>", $str); // link with title
  $str = preg_replace("/\[\[(.+)\]\]/", "<a href=\"\\1\">\\1</a>", $str); // link without title
 // $str = eregi_replace("\[\[(.+?)\|(.+?)\]\]", "<a href=\"\\1\">\\2</a>", $str); // link with title
 // $str = eregi_replace("\[\[(.+)\]\]", "<a href=\"\\1\">\\1</a>", $str); // link without title
-}
-
-$str = eregi_replace("quote\\]","quote]",$str); // make lower case
-$str = eregi_replace("\[quote\]\r\n", '<blockquote><smallfont><b>quote:</b><hr>', $str);
-$str = eregi_replace("\[quote\]", '<blockquote><smallfont><b>quote:</b><hr>', $str);
-$str = eregi_replace("\[/quote\]\r\n", '<hr></font></blockquote>', $str);
-$str = eregi_replace("\[/quote\]", '<hr></font></blockquote>', $str);
 
 $str = eregi_replace("\\[center]([^\\[]*)\\[/center\\]", "</p>\n<p style=\"text-align:center\">\\1</p>\n<p>", $str);
 $str = eregi_replace("\\[left]([^\\[]*)\\[/left\\]", "</p>\n<p style=\"text-align:left\">\\1</p>\n<p>", $str);

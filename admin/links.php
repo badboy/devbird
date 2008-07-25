@@ -48,12 +48,16 @@ while($link = $Blog->fetch_links())
 EOF_OPTIONS;
  if(!$allowed) $options = '[Keine Berechtigung]';
 
+ $link_name = stripslashes($link->name);
+ $link_desc = stripslashes($link->desc);
+ $link_link = stripslashes($link->link);
+
  echo <<<EOF
 <tr>
  <td>{$link->sort}</td>
- <td>{$link->name}</td>
- <td>{$link->desc}</td>
- <td>{$link->link}</td>
+ <td>{$link_name}</td>
+ <td>{$link_desc}</td>
+ <td>{$link_link}</td>
  <td>{$options}</td>
 </tr>
 
@@ -81,11 +85,15 @@ while($link = $Blog->fetch_links())
 EOF_OPTIONS;
  if(!$allowed) $options = '[Keine Berechtigung]';
 
+ $link_name = stripslashes($link->name);
+ $link_desc = stripslashes($link->desc);
+ $link_link = stripslashes($link->link);
+
  echo <<<EOF
 <tr>
- <td>{$link->name}</td>
- <td>{$link->desc}</td>
- <td>{$link->link}</td>
+ <td>{$link_name}</td>
+ <td>{$link_desc}</td>
+ <td>{$link_link}</td>
  <td>{$options}</td>
 </tr>
 

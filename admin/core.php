@@ -6,7 +6,7 @@ require '../classes/user.class.php';
 
 class Devbird
 {
-	const Version = "0.2.0";
+	const Version = '0.2.1';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -28,6 +28,7 @@ class Devbird
 		date_default_timezone_set('Europe/Berlin');
 		define('IN_CORE', true);
 		require '../config/config.php';
+
 		$dbconfig = array(
 			'hostname'=> $mysql_hostname,
 			'username'=> $mysql_username,
@@ -36,9 +37,10 @@ class Devbird
 		);
 
 		 $this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
-		if(!$this->DB)
+		if(mysqli_connect_errno())
 			die("Can't connect to database");
-		$res = $this->query("SELECT type, name, value FROM {settings}") or die($this->error());
+
+		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
 		{
 			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = $setting['value'];
@@ -75,6 +77,24 @@ class Devbird
 			return $this->DB->query($query_string);
 	}
 
+	function get_tags()
+	{
+		$sql = 'SELECT tags FROM {news}';
+		$res = $this->query($sql, false);
+		$tags = array();
+		while($return = $res->fetch_object())
+		{
+			$arr = explode(' ', $return->tags);
+			foreach($arr as $entry)
+			{
+				if(!in_array($entry, $tags))
+					$tags[] = $entry;
+			}
+		}
+        sort($tags);
+		return $tags;
+	}
+
 	function news_num($where='')
 	{
 		$res = $this->query("SELECT count(id) as count FROM {news} {$where}");
@@ -99,7 +119,7 @@ class Devbird
 
 	function pages_num($where='')
 	{
-		$res = $this->query("SELECT count(short_name) as count FROM {pages} ".(strlen($where) > 0 ? 'WHERE ' : '').$where);
+		$res = $this->query('SELECT count(short_name) as count FROM {pages} '.(strlen($where) > 0 ? 'WHERE ' : '').$where);
 		if($res)
 		{
 			$data = $res->fetch_object();
