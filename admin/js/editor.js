@@ -1,4 +1,4 @@
-var blogurl = "http://localhost/devbird_git/admin";
+var blogurl = "http://badboy.pytalhost.de/admin";
 var interval = null;
 
 function insert(aTag, eTag) {

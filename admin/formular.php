@@ -1,5 +1,6 @@
 <?
 if(!defined('IN_DEVBIRD')) die("Direct access not allowed");
+define('IN_FORMULAR', true);
 
 if(!isset($_GET['id']) || !isset($_GET['action']))
 {
@@ -163,6 +164,13 @@ if(!isset($hide_form) || !$hide_form) {
 	}
  }
 ?>
+  </p>
+ </fieldset>
+ 
+ <fieldset>
+  <legend>Trackbacks</legend>
+  <p>Sende Trackback an:
+   <input type="text" name="article_trackback" class="bigger_input" />
   </p>
  </fieldset>
 

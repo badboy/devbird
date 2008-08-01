@@ -6,7 +6,7 @@ require '../classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.2.1';
+	const Version = '0.3.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -410,7 +410,7 @@ class Devbird
 	{
 		return $this->query("SELECT * FROM {settings} ORDER BY sort");
 	}
-
+	
 	function insert_article($article_id, $article_title, $article_writer, $article_date, $article_public, $article_content, $article_bb, $article_tags, $article_comments)
 	{
 		$article_id = $this->DB->real_escape_string($article_id);
@@ -423,8 +423,8 @@ class Devbird
 		$article_bb = $this->DB->real_escape_string($article_bb);
 		$article_tags = $this->DB->real_escape_string($article_tags);
 		$article_comments = $article_comments == 1 ? 1 : 0;
-
-		if($article_id == 0)
+		
+		if($article_id == 0) // insert new article
 		{
 			$sql = <<<SQL_QUERY
 INSERT INTO `{news}` (`created`, `published`, `short_name`, `title`, `message`, `writer`, `tags`, `bb_code`, `ajax_saved`, `comments`) VALUES
@@ -453,7 +453,7 @@ SQL_QUERY;
 #echo $sql;
 		$res = $this->query($sql);
 		if($res) return true;
-		else return false;
+		return false;
 	}
 
 	function insert_page($action, $page_title, $page_longtitle, $page_date, $page_public, $page_content, $page_bb)
@@ -500,6 +500,88 @@ SQL_QUERY;
 		$text = preg_replace('/-+$/', '', $text);
 		return strtolower($text);
 	}
+	
+	function send_trackback($trackback_url, $article_id, $article_title, $article_content)
+    {
+    	$url = $this->rootpath.'/'.$article_id.'/'.$this->shorttext($article_title);
+
+		$blogname = $this->settings['Blogname'];
+		$title = $article_title;
+		# 255
+		
+		if(strlen($article_content) > 255)
+		{
+			$desc = '(...) ' . substr($article_content, 0, 243) . ' (...)';
+		}
+		else
+			$desc = $article_content;
+			
+		$desc = strip_tags($desc);
+    
+		$data = "title=" . urlencode($title);
+		$data .= "&url=" . urlencode($url);
+		$data .= "&blog_name=" . urlencode($blogname);
+		$data .= "&excerpt=" . urlencode($desc);
+
+
+		$tb_url = parse_url($trackback_url);
+		$trackback_url = $tb_url['path'];
+		if(!empty($tb_url['query']))
+			$trackback_url .= '?'.$tb_url['query'];
+		$host = $tb_url['host'];
+			$host .= ':' . $tb_url['port'];
+
+		if(empty($tb_url['port']))
+			$fp = @fsockopen($host, 80);
+		else
+			$fp = @fsockopen($host, $tb_url['port']);
+		if(!$fp) return array('error'=>1, 'message'=>'Konnte nicht zum Server verbinden');
+
+		@fwrite($fp, "POST ".$trackback_url." HTTP/1.1\r\n");
+		@fwrite($fp, "Host: ".$host."\r\n");
+		@fwrite($fp, "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n");
+		@fwrite($fp, "Content-length: ".strlen($data)."\r\n");
+		@fwrite($fp, "Connection: close\r\n\r\n");
+		@fwrite($fp, $data);
+		
+		$complete_ret = '';
+		
+		do
+		{
+			$retstring = fread($fp, 512);
+			if(strlen($retstring) > 0)
+				$complete_ret .= $retstring;
+		}
+		while(strlen($retstring) > 0);
+		
+		@fclose($fp);
+		list($header, $body) = explode("\r\n\r\n", $complete_ret);
+		$result;
+		if(!preg_match("/content-type: (.+)/i", $header, $result))
+		{
+			return array('error'=>1, 'message'=>'Server sendet keinen Content-Type.');
+		}
+
+		if(trim($result[1]) != 'text/xml')
+		{
+			return array('error'=>1, 'message'=>'Server sendet falschen Content-Type.');
+		}
+		
+		if(strpos($body, '<error>0</error>'))
+			return array('error'=>0);
+		else if(strpos($body, '<error>1</error>'))
+		{
+			if(!preg_match("/<message>(.+)<\/message>/", $body, $result))
+				return array('error'=>1, 'message'=>'Server liefert einen Fehler aber keine Nachricht zurück.');
+			else
+				return array('error'=>1, 'message'=>'"' . htmlspecialchars($result[1]) . '"');
+		}
+		else
+			return array('error'=>1, 'message'=>'Server liefert kein Resultat.');
+
+		
+        return array('error'=>0);
+    }
 }
 
 

@@ -1,12 +1,13 @@
 RewriteEngine on
-RewriteBase /devbird_git/
+
 RewriteCond %{REQUEST_URI} !-f
 RewriteCond %{REQUEST_URI} !-d
 RewriteRule ^page/(\d+)$ index.php?p=$1
 RewriteRule ^site/(.+)$ index.php?site=$1
-RewriteRule ^(\d+)/.*$ index.php?id=$1
+RewriteRule ^(\d+)/.+/trackback$ trackback.php?id=$1
+RewriteRule ^(\d+)/.+$ index.php?id=$1
 RewriteRule ^(index(\.php)*)*$ index.php
 RewriteRule ^tag/(.*?)(/page/(\d+))*$ index.php?tag=$1&p=$3
 RewriteRule ^feed/(rss|atom)?$ feed.php?type=$1
 
-ErrorDocument 404 /devbird_git/error.php?error=404
+ErrorDocument 404 error.php?error=404

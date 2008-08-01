@@ -19,7 +19,7 @@ include('../config/config.php');
  $db_prefix = TABLE_PREFIX;
  if (mysqli_connect_errno() != 0)
  {
-  die_save("<p>Konnte nicht zur Datenbank verbinden. Sind die Daten vielleicht falsch?</p><p><a href=\"settings.php\">Zurück</a></p>");
+ 	die_save("<p>Konnte nicht zur Datenbank verbinden. Sind die Daten vielleicht falsch?</p><p><a href=\"settings.php\">Zurück</a></p>");
  }
 
  // ändere Tabellen

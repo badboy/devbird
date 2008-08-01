@@ -7,7 +7,7 @@ require 'classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.2.1';
+	const Version = '0.3.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -65,7 +65,7 @@ class Devbird
 	function include_lightbox()
 	{
 		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/prototype.js"></script>'."\n";
-		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/scriptaculous.js?load=effects"></script>'."\n";
+		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/scriptaculous.js?load=effects,builder"></script>'."\n";
 		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/lightbox.js"></script>'."\n";
 		echo '<link rel="stylesheet" href="'.$this->rootpath.'/css/lightbox.css" type="text/css" media="screen" />'."\n";
 	}
@@ -352,6 +352,7 @@ class Devbird
 		else $disable_comments = false;
 		$com_count = $this->commentsno($id);
 		$url = $this->rootpath.'/'.$id.'/'.$this->shorttext($title);
+		$trackback_url = $url . '/trackback';
 		$tags = explode(' ', $news->tags);
 		$rootpath = $this->rootpath;
 		$Blog = $this;
@@ -537,7 +538,8 @@ class Devbird
 		}
 		return true;
 	}
-        function fetch_single_news($id, $commenthead, $nocommenttext, $nocomments=false)
+	
+	function fetch_single_news($id, $commenthead, $nocommenttext, $nocomments=false)
 	{
 		$path = $this->design().'/'.$this->newsbox;
 		$comment_path = $this->design().'/'.$this->commentbox;
@@ -970,6 +972,11 @@ private
 		$email = $this->DB->real_escape_string($email);
 		$website = $this->DB->real_escape_string($website);
 		$comment = $this->DB->real_escape_string($comment);
+		
+		$p = $this->getnewsbyid($id);
+		if(!$p) return false;
+		$p = $p->fetch_object();
+		if(!$p) return false;
 
 		$ip = $this->DB->real_escape_string($_SERVER['REMOTE_ADDR']);
 		$date = time();

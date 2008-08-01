@@ -34,6 +34,8 @@ if(isset($_POST['article_save']))
  $article_tags = isset($_POST['article_tags']) ? $_POST['article_tags'] : '';
  $article_datechange = isset($_POST['article_datechange']) ? $_POST['article_datechange'] : false;
  $article_comments = isset($_POST['article_comments']) ? $_POST['article_comments'] : false;
+ 
+ $article_trackback = isset($_POST['article_trackback']) ? $_POST['article_trackback'] : false;
 
  // für erneute ausgabe vorbereiten
  $out_id = htmlspecialchars($article_id);
@@ -67,8 +69,43 @@ if(isset($_POST['article_save']))
 
  if($Blog->insert_article($article_id, $article_title, $article_writer, $article_date, $article_public, $article_content, $article_bb, $article_tags, $article_comments))
  {
-   $done_msg = "Artikel erfolgreich gespeichert!<br />\n";
-   if($article_public > 0 && $article_id > 0)
+	$done_msg = "Artikel erfolgreich gespeichert!<br />\n";
+   
+   	if(!empty($article_trackback))
+	{
+		$skip_tb = false;
+		if($article_id == 0)
+		{
+				$article_date = $Blog->DB->real_escape_string($article_date);
+				$article_title = $Blog->DB->real_escape_string($article_title);
+				$res = $Blog->query("SELECT id FROM {news} WHERE created = '{$article_date}' AND title = '{$article_title}' LIMIT 1");
+				if(!$res)
+				{
+					die($Blog->error());
+					$done_msg .= "<span style=\"color:red\">Fehler beim Senden des Trackbacks! (ID kann nicht ausgelesen werden)</span><br />\n";
+					$skip_tb = true;
+				}
+				else
+				{
+					$tmp = $res->fetch_object();
+					$article_id = $tmp->id;	
+				}
+		}
+		if(!$skip_tb)
+		{
+			$tb_ret = $Blog->send_trackback($article_trackback, $article_id, $article_title, $article_content);
+			if($tb_ret['error'] == 0)
+			{
+				$done_msg .= "Trackback wurde gesendet!<br />\n";
+			}
+			else
+			{
+				$done_msg .= "<span style=\"color:red\">Fehler beim Senden des Trackbacks!<br />{$tb_ret['message']}</span><br />\n";
+			}
+		}
+	}
+   
+	if($article_public > 0 && $article_id > 0)
 	$done_msg .= "<br />\n<a href=\"{$Blog->adminrootpath}/formular.db/{$article_id}/edit\">Weiter bearbeiten</a><br />\n<a href=\"{$Blog->rootpath}/{$article_id}/{$article_shorttitle}\">Zum Artikel</a>";
    else
 	$done_msg .= "<br />\n<a href=\"{$Blog->rootpath}/\">Zur Seite</a>";

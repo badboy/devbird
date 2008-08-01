@@ -1,13 +1,8 @@
 <?
 $add_pages = <<<QUERY
-CREATE TABLE IF NOT EXISTS `{$db_prefix}pages` (
-  `short_name` varchar(50) collate utf8_unicode_ci NOT NULL,
-  `title` varchar(100) collate utf8_unicode_ci NOT NULL,
-  `created` int(11) NOT NULL,
-  `published` int(11) NOT NULL,
-  `body` text collate utf8_unicode_ci NOT NULL,
-  `bb_code` text collate utf8_unicode_ci NOT NULL,
-  PRIMARY KEY  (`short_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+DELETE FROM `{$db_prefix}settings` WHERE CONVERT(`{$db_prefix}settings`.`name` USING utf8) = 'Extra-BB-Codes' LIMIT 1
+UPDATE `{$db_prefix}settings` SET `sort` = '8' WHERE CONVERT( `{$db_prefix}settings`.`name` USING utf8 ) = 'AJAX-Autosave' LIMIT 1 ;
+UPDATE `{$db_prefix}settings` SET `sort` = '9' WHERE CONVERT( `{$db_prefix}settings`.`name` USING utf8 ) = 'Standardcodesprache' LIMIT 1 ;
 QUERY;
+
 ?>

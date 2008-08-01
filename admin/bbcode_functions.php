@@ -35,6 +35,40 @@ return $str;
 }
 
 function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath) {
+// code
+ $code_ids = array();
+ while(($ereg= preg_match("/\[code(=(.+?))*\](.+?)\[\/code\]/s", $str,$reg)))
+ {
+  $code_id = 0;
+  do
+  {
+      $code_id = mt_rand(100, 10000);
+  }
+  while(array_key_exists($code_id, $code_ids));
+
+  $lang = $reg[2];
+  $str2 = $reg[3];
+  if($lang === null || $lang == "")
+  {
+    if($stdlang) $lang = $stdlang;
+    else $lang = 'c';
+  }
+
+  $humanreadable_lang = lang_name($lang);
+  if($humanreadable_lang == " (unknown language)")
+    $humanreadable_lang = $lang.$humanreadable_lang;
+
+  $str2 = stripslashes($str2);
+
+  $str2 = geshi_highlight($str2, $lang, null, true);
+  $str2 = eregi_replace("\\\\([ntr])", '\\\\\\\\1', $str2);
+  $str2 = eregi_replace("<br />", "", $str2);
+  $str2 = preg_replace("/\n<\/span><\/code>$/", '</span></code>', $str2);
+
+  $code_ids[$code_id] = "</p>\n<pre class=\"code\">\n{$str2}\n</pre>\n<p>";
+  $str = preg_replace("/\[code(=({$lang}))*\](.+?)\[\/code\]/s", "[code_id={$code_id}/]", $str, 1);
+ }
+
  $str = htmlspecialchars($str);
  $str = nl2br($str);
 
@@ -110,7 +144,7 @@ $preg = array(
 
 
 // code
-$i=0;
+/*$i=0;
  while(($ereg= preg_match("/\[code(=(.+?))*\](.+?)\[\/code\]/s", $str,$reg)) && $i < 10)
  {
   $i++;
@@ -137,7 +171,13 @@ $i=0;
   $str2 = preg_replace("/\n<\/span><\/code>$/", '</span></code>', $str2);
 
   $str = preg_replace("/\[code(=({$lang}))*\](.+?)\[\/code\]/s", "</p>\n<pre class=\"code\">\n{$str2}\n</pre>\n<p>", $str, 1);
- }
+ }*/
+ #var_dump($code_ids);
+  foreach($code_ids as $c_id => $code_str)
+  {
+      $out = 0;
+      $str = preg_replace("/\[code_id={$c_id}\/\]/", $code_str, $str, 1, $out);
+  }
 
 return $str;
 }
