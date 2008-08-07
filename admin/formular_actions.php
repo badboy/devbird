@@ -57,7 +57,7 @@ if(isset($_POST['article_save']))
   $article_tags = 'main';
  }
  $article_bb = $article_content;
- $article_content = replace_ubbcode($article_content, ($Blog->settings['Extra-BB-Codes'] == 'an' ? true : false), ($Blog->settings['Standardcodesprache']), $Blog->rootpath);
+ $article_content = replace_ubbcode($article_content, ($Blog->settings['Standardcodesprache']), $Blog->rootpath);
 
  if($action == 'edit')
 	$article_public = $article_datechange ? ($article_public ? time(0) : 0) : $article_date;

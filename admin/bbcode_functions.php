@@ -34,7 +34,7 @@ $smilys = array(
 return $str;
 }
 
-function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath) {
+function replace_ubbcode($str, $stdlang=false, $rootpath) {
 // code
  $code_ids = array();
  while(($ereg= preg_match("/\[code(=(.+?))*\](.+?)\[\/code\]/s", $str,$reg)))
@@ -91,12 +91,7 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
  $str = eregi_replace("\\[i]([^\\[]*)\\[/i\\]","<i>\\1</i>", $str); // kursiv
  $str = eregi_replace("\\[u]([^\\[]*)\\[/u\\]","<u>\\1</u>", $str); // underline
  $str = preg_replace('/\[bq]([^\[]*)\[\/bq\]/i', "</p><blockquote><p>\\1</p></blockquote><p>", $str);
- if($extendedbbcode)
- {
-   $str = eregi_replace("//([^/]+)//", "<i>\\1</i>", $str); // kursiv
-   $str = eregi_replace("\\*\\*([^\\*]+)\\*\\*", "<strong>\\1</strong>", $str); // b|strong
-   $str = eregi_replace("__([^_]+)__", "<u>\\1</u>", $str); // underline
- }
+
  $str = eregi_replace("\\[s]([^\\[]*)\\[/s\\]","<s>\\1</s>", $str); // strike
  $str = eregi_replace("\\[color=([^\\[]*)\\]([^\\[]*)\\[/color\\]","<span style=\"color:\\1;\">\\2</span>", $str); // color
 

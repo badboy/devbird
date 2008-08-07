@@ -526,23 +526,23 @@ SQL_QUERY;
 
 		$tb_url = parse_url($trackback_url);
 		$trackback_url = $tb_url['path'];
-		if(!empty($tb_url['query']))
+		if(isset($tb_url['query']) && !empty($tb_url['query']))
 			$trackback_url .= '?'.$tb_url['query'];
 		$host = $tb_url['host'];
-			$host .= ':' . $tb_url['port'];
 
-		if(empty($tb_url['port']))
+
+
+		if(!isset($tb_url['port']) || empty($tb_url['port']))
 			$fp = @fsockopen($host, 80);
 		else
 			$fp = @fsockopen($host, $tb_url['port']);
 		if(!$fp) return array('error'=>1, 'message'=>'Konnte nicht zum Server verbinden');
-
-		@fwrite($fp, "POST ".$trackback_url." HTTP/1.1\r\n");
-		@fwrite($fp, "Host: ".$host."\r\n");
-		@fwrite($fp, "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n");
-		@fwrite($fp, "Content-length: ".strlen($data)."\r\n");
-		@fwrite($fp, "Connection: close\r\n\r\n");
-		@fwrite($fp, $data);
+		fwrite($fp, "POST ".$trackback_url." HTTP/1.1\r\n");
+		fwrite($fp, "Host: ".$host."\r\n");
+		fwrite($fp, "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n");
+		fwrite($fp, "Content-length: ".strlen($data)."\r\n");
+		fwrite($fp, "Connection: close\r\n\r\n");
+		fwrite($fp, $data);
 		
 		$complete_ret = '';
 		
@@ -554,7 +554,7 @@ SQL_QUERY;
 		}
 		while(strlen($retstring) > 0);
 		
-		@fclose($fp);
+		fclose($fp);
 		list($header, $body) = explode("\r\n\r\n", $complete_ret);
 		$result;
 		if(!preg_match("/content-type: (.+)/i", $header, $result))
@@ -562,7 +562,8 @@ SQL_QUERY;
 			return array('error'=>1, 'message'=>'Server sendet keinen Content-Type.');
 		}
 
-		if(trim($result[1]) != 'text/xml')
+		$cot = trim($result[1]);
+		if(!preg_match('/^text\/xml/i', $cot))
 		{
 			return array('error'=>1, 'message'=>'Server sendet falschen Content-Type.');
 		}
