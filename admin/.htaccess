@@ -1,10 +1,8 @@
 RewriteEngine on
-RewriteBase /devbird_git/admin/
+
 RewriteCond %{REQUEST_URI} !-f
 RewriteCond %{REQUEST_URI} !-d
 RewriteRule ^(.+).db*$ index.php?site=$1
 RewriteRule ^(.+).db.(\d+)$ index.php?site=$1&p=$2
 RewriteRule ^(.+).db/(.+)/(.+)$ index.php?site=$1&id=$2&action=$3
 RewriteRule ^(.+).db/(.+)$ index.php?site=$1&action=$2
-
-ErrorDocument 404 /devbird_git/error.php?error=404

@@ -60,7 +60,7 @@ CONFIG_CONTENT;
  }
 
  // wenn Verbindung OK => schreibe Config-Datei
- if(!@file_put_contents('../config/config.php', $config_content)) die_save('Einstellungsdatei konnte nicht geschrieben werden.');
+ if(!@file_put_contents('../config/config.php', $config_content)) die_save('Konfigurationsdatei konnte nicht geschrieben werden.');
  echo '<p style="color:green;">Konfigurationsdatei erfolgreich gespeichert!</p>', "\n";
 
  // erstelle Tabellen
@@ -116,6 +116,10 @@ CONFIG_CONTENT;
  {
    die_save('Passwort darf nicht gleich dem Namen sein!');
  }
+ 
+ $user_name = $DB->real_escape_string($user_name);
+ $user_mail = $DB->real_escape_string($user_mail);
+ 
  if(!$DB->query($user_insert))
  {
    die_save('Admin-Account konnte nicht in die Datenbank geschrieben werden! ('.$DB->error.')');

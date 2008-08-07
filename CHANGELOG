@@ -1,0 +1,19 @@
+Devbird v0.3.0 - Release: 07.08.2008
+------------------------------------------------------------
+ by BadBoy_
+
+Changelog:
+
+-- v0.3.0 --
+ - neueste Lightbox/Prototype Version
+ - Trackbacks
+ - Tagsortierung
+ - Taganzeige im Editor
+ - überflüssiges RewriteBase in .htaccess-Dateien entfernt
+
+-- v0.2.0 --
+ - erster Public Release
+
+-- v0.0.1 --
+ - allererste Beta, nicht public
+	

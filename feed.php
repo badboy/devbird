@@ -1,4 +1,7 @@
 <?php
 require 'core.php';
-$Blog->newsfeed();
+if(isset($_GET['type']) && $_GET['type'] === 'atom')
+	$Blog->atomfeed();
+else
+	$Blog->rssfeed();
 ?>

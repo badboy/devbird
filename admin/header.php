@@ -18,7 +18,7 @@
 <? } ?>
 </head>
 <? if(isset($_GET['site']) && $_GET['site'] == 'formular' && $Blog->settings['AJAX-Autosave'] == 'an') { ?>
-<body onload="editor_init();">
+<body onload="editorInit();">
 <? } else { ?>
 <body>
 <? } ?>

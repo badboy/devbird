@@ -6,7 +6,7 @@ require '../classes/user.class.php';
 
 class Devbird
 {
-	const Version = "0.2.0";
+	const Version = '0.3.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -28,6 +28,7 @@ class Devbird
 		date_default_timezone_set('Europe/Berlin');
 		define('IN_CORE', true);
 		require '../config/config.php';
+
 		$dbconfig = array(
 			'hostname'=> $mysql_hostname,
 			'username'=> $mysql_username,
@@ -36,9 +37,10 @@ class Devbird
 		);
 
 		 $this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
-		if(!$this->DB)
+		if(mysqli_connect_errno())
 			die("Can't connect to database");
-		$res = $this->query("SELECT type, name, value FROM {settings}") or die($this->error());
+
+		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
 		{
 			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = $setting['value'];
@@ -75,6 +77,24 @@ class Devbird
 			return $this->DB->query($query_string);
 	}
 
+	function get_tags()
+	{
+		$sql = 'SELECT tags FROM {news}';
+		$res = $this->query($sql, false);
+		$tags = array();
+		while($return = $res->fetch_object())
+		{
+			$arr = explode(' ', $return->tags);
+			foreach($arr as $entry)
+			{
+				if(!in_array($entry, $tags))
+					$tags[] = $entry;
+			}
+		}
+        sort($tags);
+		return $tags;
+	}
+
 	function news_num($where='')
 	{
 		$res = $this->query("SELECT count(id) as count FROM {news} {$where}");
@@ -99,7 +119,7 @@ class Devbird
 
 	function pages_num($where='')
 	{
-		$res = $this->query("SELECT count(short_name) as count FROM {pages} ".(strlen($where) > 0 ? 'WHERE ' : '').$where);
+		$res = $this->query('SELECT count(short_name) as count FROM {pages} '.(strlen($where) > 0 ? 'WHERE ' : '').$where);
 		if($res)
 		{
 			$data = $res->fetch_object();
@@ -390,7 +410,7 @@ class Devbird
 	{
 		return $this->query("SELECT * FROM {settings} ORDER BY sort");
 	}
-
+	
 	function insert_article($article_id, $article_title, $article_writer, $article_date, $article_public, $article_content, $article_bb, $article_tags, $article_comments)
 	{
 		$article_id = $this->DB->real_escape_string($article_id);
@@ -403,8 +423,8 @@ class Devbird
 		$article_bb = $this->DB->real_escape_string($article_bb);
 		$article_tags = $this->DB->real_escape_string($article_tags);
 		$article_comments = $article_comments == 1 ? 1 : 0;
-
-		if($article_id == 0)
+		
+		if($article_id == 0) // insert new article
 		{
 			$sql = <<<SQL_QUERY
 INSERT INTO `{news}` (`created`, `published`, `short_name`, `title`, `message`, `writer`, `tags`, `bb_code`, `ajax_saved`, `comments`) VALUES
@@ -433,7 +453,7 @@ SQL_QUERY;
 #echo $sql;
 		$res = $this->query($sql);
 		if($res) return true;
-		else return false;
+		return false;
 	}
 
 	function insert_page($action, $page_title, $page_longtitle, $page_date, $page_public, $page_content, $page_bb)
@@ -480,6 +500,89 @@ SQL_QUERY;
 		$text = preg_replace('/-+$/', '', $text);
 		return strtolower($text);
 	}
+	
+	function send_trackback($trackback_url, $article_id, $article_title, $article_content)
+    {
+    	$url = $this->rootpath.'/'.$article_id.'/'.$this->shorttext($article_title);
+
+		$blogname = $this->settings['Blogname'];
+		$title = $article_title;
+		# 255
+		
+		if(strlen($article_content) > 255)
+		{
+			$desc = '(...) ' . substr($article_content, 0, 243) . ' (...)';
+		}
+		else
+			$desc = $article_content;
+			
+		$desc = strip_tags($desc);
+    
+		$data = "title=" . urlencode($title);
+		$data .= "&url=" . urlencode($url);
+		$data .= "&blog_name=" . urlencode($blogname);
+		$data .= "&excerpt=" . urlencode($desc);
+
+
+		$tb_url = parse_url($trackback_url);
+		$trackback_url = $tb_url['path'];
+		if(isset($tb_url['query']) && !empty($tb_url['query']))
+			$trackback_url .= '?'.$tb_url['query'];
+		$host = $tb_url['host'];
+
+
+
+		if(!isset($tb_url['port']) || empty($tb_url['port']))
+			$fp = @fsockopen($host, 80);
+		else
+			$fp = @fsockopen($host, $tb_url['port']);
+		if(!$fp) return array('error'=>1, 'message'=>'Konnte nicht zum Server verbinden');
+		fwrite($fp, "POST ".$trackback_url." HTTP/1.1\r\n");
+		fwrite($fp, "Host: ".$host."\r\n");
+		fwrite($fp, "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n");
+		fwrite($fp, "Content-length: ".strlen($data)."\r\n");
+		fwrite($fp, "Connection: close\r\n\r\n");
+		fwrite($fp, $data);
+		
+		$complete_ret = '';
+		
+		do
+		{
+			$retstring = fread($fp, 512);
+			if(strlen($retstring) > 0)
+				$complete_ret .= $retstring;
+		}
+		while(strlen($retstring) > 0);
+		
+		fclose($fp);
+		list($header, $body) = explode("\r\n\r\n", $complete_ret);
+		$result;
+		if(!preg_match("/content-type: (.+)/i", $header, $result))
+		{
+			return array('error'=>1, 'message'=>'Server sendet keinen Content-Type.');
+		}
+
+		$cot = trim($result[1]);
+		if(!preg_match('/^text\/xml/i', $cot))
+		{
+			return array('error'=>1, 'message'=>'Server sendet falschen Content-Type.');
+		}
+		
+		if(strpos($body, '<error>0</error>'))
+			return array('error'=>0);
+		else if(strpos($body, '<error>1</error>'))
+		{
+			if(!preg_match("/<message>(.+)<\/message>/", $body, $result))
+				return array('error'=>1, 'message'=>'Server liefert einen Fehler aber keine Nachricht zurück.');
+			else
+				return array('error'=>1, 'message'=>'"' . htmlspecialchars($result[1]) . '"');
+		}
+		else
+			return array('error'=>1, 'message'=>'Server liefert kein Resultat.');
+
+		
+        return array('error'=>0);
+    }
 }
 
 

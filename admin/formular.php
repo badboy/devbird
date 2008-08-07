@@ -1,5 +1,6 @@
 <?
 if(!defined('IN_DEVBIRD')) die("Direct access not allowed");
+define('IN_FORMULAR', true);
 
 if(!isset($_GET['id']) || !isset($_GET['action']))
 {
@@ -73,7 +74,7 @@ else
 
 if(!isset($hide_form) || !$hide_form) {
 ?>
-<form method="post" action="<?=$_SERVER['REQUEST_URI'] ?>" class="editor" onsubmit="editor_close();" id="article_editor">
+<form method="post" action="<?=$_SERVER['REQUEST_URI'] ?>" class="editor" onsubmit="editorClose();" id="article_editor">
  <input type="hidden" name="article_id" value="<?=$id; ?>" id="article_id" />
 
  <fieldset>
@@ -103,41 +104,41 @@ if(!isset($hide_form) || !$hide_form) {
     <input class="bigger_input" type="text" value="<?=($Blog->settings['AJAX-Autosave'] == 'an' ? '[not saved]' : '[AJAX-Autosave abgeschaltet]') ?>" readonly="readonly" id="status" />
    </p>
    <p>
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/bold.gif" alt="Bold" title="Bold [b][/b]" onclick="editor_add('b');" >
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/underline.gif" alt="Underline" title="Underline [u][/u]" onclick="editor_add('u');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/italic.gif" alt="Italic" title="Italic [i][/i]" onclick="editor_add('i');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/strike.gif" alt="Strike" title="Strike [s][/s]" onclick="editor_add('s');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/url.gif" alt="URL" title="URL [url=link][/url]" onclick="editor_add('url');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/code.gif" alt="Code" title="Code [code=lang][/code]" onclick="editor_add('code');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/img.gif" alt="Image" title="Image [img][/img&lt;,x,y&gt;]" onclick="editor_add('img')">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/flash.gif" alt="Flash" title="Flash [flash][/flash]" onclick="editor_add('flash');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/left.gif" alt="Left" title="Left [left][/left] (erzeugt Umbruch)" onclick="editor_add('left');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/center.gif" alt="Center" title="Center [center][/center] (erzeugt Umbruch)" onclick="editor_add('center');">
-    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/right.gif" alt="Right" title="Right [right][/right] (erzeugt Umbruch)" onclick="editor_add('right');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/bold.gif" alt="Bold" title="Bold [b][/b]" onclick="editorAdd('b');" >
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/underline.gif" alt="Underline" title="Underline [u][/u]" onclick="editorAdd('u');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/italic.gif" alt="Italic" title="Italic [i][/i]" onclick="editorAdd('i');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/strike.gif" alt="Strike" title="Strike [s][/s]" onclick="editorAdd('s');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/url.gif" alt="URL" title="URL [url=link][/url]" onclick="editorAdd('url');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/code.gif" alt="Code" title="Code [code=lang][/code]" onclick="editorAdd('code');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/img.gif" alt="Image" title="Image [img][/img&lt;,x,y&gt;]" onclick="editorAdd('img')">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/flash.gif" alt="Flash" title="Flash [flash][/flash]" onclick="editorAdd('flash');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/left.gif" alt="Left" title="Left [left][/left] (erzeugt Umbruch)" onclick="editorAdd('left');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/center.gif" alt="Center" title="Center [center][/center] (erzeugt Umbruch)" onclick="editorAdd('center');">
+    <img class="insbutton" src="<?=$Blog->rootpath ?>/images/right.gif" alt="Right" title="Right [right][/right] (erzeugt Umbruch)" onclick="editorAdd('right');">
    </p>
    <p>
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_evil.gif" onclick="editor_add(']:-> ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_idea.gif" onclick="editor_add(':idea: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_smile.gif" onclick="editor_add(':) ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_wink.gif" onclick="editor_add(';) ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_rolleyes.gif" onclick="editor_add(':roll: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_confused.gif" onclick="editor_add(':/ ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_lol.gif" onclick="editor_add(':lol: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_surprised.gif" onclick="editor_add(':O ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_sad.gif" onclick="editor_add(':( ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_cool.gif" onclick="editor_add('8) ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_razz.gif" onclick="editor_add(':> ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_eek.gif" onclick="editor_add(':shock: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_cry.gif" onclick="editor_add(':'( ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_mad.gif" onclick="editor_add(':mad: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_biggrin.gif" onclick="editor_add(':D ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_mrgreen.gif" onclick="editor_add(':green: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_neutral.gif" onclick="editor_add(':| ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_exclaim.gif" onclick="editor_add(':!: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_question.gif" onclick="editor_add(':?: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_arrow.gif" onclick="editor_add(':>: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_redface.gif" onclick="editor_add(':red: ');">
-    <img src="<?=$Blog->rootpath ?>/smilies/icon_twisted.gif" onclick="editor_add(':evil: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_evil.gif" onclick="editorAdd(']:-> ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_idea.gif" onclick="editorAdd(':idea: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_smile.gif" onclick="editorAdd(':) ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_wink.gif" onclick="editorAdd(';) ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_rolleyes.gif" onclick="editorAdd(':roll: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_confused.gif" onclick="editorAdd(':/ ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_lol.gif" onclick="editorAdd(':lol: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_surprised.gif" onclick="editorAdd(':O ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_sad.gif" onclick="editorAdd(':( ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_cool.gif" onclick="editorAdd('8) ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_razz.gif" onclick="editorAdd(':> ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_eek.gif" onclick="editorAdd(':shock: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_cry.gif" onclick="editorAdd(':'( ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_mad.gif" onclick="editorAdd(':mad: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_biggrin.gif" onclick="editorAdd(':D ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_mrgreen.gif" onclick="editorAdd(':green: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_neutral.gif" onclick="editorAdd(':| ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_exclaim.gif" onclick="editorAdd(':!: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_question.gif" onclick="editorAdd(':?: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_arrow.gif" onclick="editorAdd(':>: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_redface.gif" onclick="editorAdd(':red: ');">
+    <img src="<?=$Blog->rootpath ?>/smilies/icon_twisted.gif" onclick="editorAdd(':evil: ');">
    </p>
 
    <p><textarea name="article_content" id="article_content" class="article_text"><?=$out_content ?></textarea></p>
@@ -145,8 +146,32 @@ if(!isset($hide_form) || !$hide_form) {
  
  <fieldset>
   <legend>Tags</legend>
-  <p><input type="text" name="article_tags" class="bigger_input" value="<?=$out_tags ?>" /></p>
+  <p>
+   <input type="text" name="article_tags" class="bigger_input" value="<?=$out_tags ?>" id="a_tags" />
+   <input type="button" value="Tags entfernen"  onclick="$('a_tags').value='';"/>
+  </p>
   <p class="subinfo">Mehrere Tags mit einem Leerzeichen trennen</p>
+  <p>Vorhandene Tags:<br />
+<?
+ $tags = $Blog->get_tags();
+ if(empty($tags))
+	echo "keine Tags gefunden";
+ else
+ {
+	foreach($Blog->get_tags() as $_tag)
+	{
+		echo "<a href=\"javascript:addTag('{$_tag}');\" title=\"Tag einfügen: {$_tag}\">{$_tag}</a> ";
+	}
+ }
+?>
+  </p>
+ </fieldset>
+ 
+ <fieldset>
+  <legend>Trackbacks</legend>
+  <p>Sende Trackback an:
+   <input type="text" name="article_trackback" class="bigger_input" />
+  </p>
  </fieldset>
 
  <fieldset>

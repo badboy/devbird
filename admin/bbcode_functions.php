@@ -34,7 +34,41 @@ $smilys = array(
 return $str;
 }
 
-function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath) {
+function replace_ubbcode($str, $stdlang=false, $rootpath) {
+// code
+ $code_ids = array();
+ while(($ereg= preg_match("/\[code(=(.+?))*\](.+?)\[\/code\]/s", $str,$reg)))
+ {
+  $code_id = 0;
+  do
+  {
+      $code_id = mt_rand(100, 10000);
+  }
+  while(array_key_exists($code_id, $code_ids));
+
+  $lang = $reg[2];
+  $str2 = $reg[3];
+  if($lang === null || $lang == "")
+  {
+    if($stdlang) $lang = $stdlang;
+    else $lang = 'c';
+  }
+
+  $humanreadable_lang = lang_name($lang);
+  if($humanreadable_lang == " (unknown language)")
+    $humanreadable_lang = $lang.$humanreadable_lang;
+
+  $str2 = stripslashes($str2);
+
+  $str2 = geshi_highlight($str2, $lang, null, true);
+  $str2 = eregi_replace("\\\\([ntr])", '\\\\\\\\1', $str2);
+  $str2 = eregi_replace("<br />", "", $str2);
+  $str2 = preg_replace("/\n<\/span><\/code>$/", '</span></code>', $str2);
+
+  $code_ids[$code_id] = "</p>\n<pre class=\"code\">\n{$str2}\n</pre>\n<p>";
+  $str = preg_replace("/\[code(=({$lang}))*\](.+?)\[\/code\]/s", "[code_id={$code_id}/]", $str, 1);
+ }
+
  $str = htmlspecialchars($str);
  $str = nl2br($str);
 
@@ -46,11 +80,8 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
 # $str = eregi_replace("\n", "<br />\n", $str);
 # $str = eregi_replace("</p><p>", "</p>\n<p>", $str);
 
- if($extendedbbcode)
- {
-   $str = eregi_replace("=== ([^=]+) ===(<br />)?", "</p>\n<h4>\\1</h4>\n<p>", $str);
-   $str = eregi_replace("== ([^=]+) ==(<br />)?", "</p>\n<h3>\\1</h3>\n<p>", $str);
- }
+  $str = eregi_replace("=== ([^=]+) ===(<br />)?", "</p>\n<h4>\\1</h4>\n<p>", $str);
+  $str = eregi_replace("== ([^=]+) ==(<br />)?", "</p>\n<h3>\\1</h3>\n<p>", $str);
 
 
 # $str = eregi_replace("_{([^}]+)}", "<sub>\\1</sub>", $str);
@@ -60,12 +91,7 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
  $str = eregi_replace("\\[i]([^\\[]*)\\[/i\\]","<i>\\1</i>", $str); // kursiv
  $str = eregi_replace("\\[u]([^\\[]*)\\[/u\\]","<u>\\1</u>", $str); // underline
  $str = preg_replace('/\[bq]([^\[]*)\[\/bq\]/i', "</p><blockquote><p>\\1</p></blockquote><p>", $str);
- if($extendedbbcode)
- {
-   $str = eregi_replace("//([^/]+)//", "<i>\\1</i>", $str); // kursiv
-   $str = eregi_replace("\\*\\*([^\\*]+)\\*\\*", "<strong>\\1</strong>", $str); // b|strong
-   $str = eregi_replace("__([^_]+)__", "<u>\\1</u>", $str); // underline
- }
+
  $str = eregi_replace("\\[s]([^\\[]*)\\[/s\\]","<s>\\1</s>", $str); // strike
  $str = eregi_replace("\\[color=([^\\[]*)\\]([^\\[]*)\\[/color\\]","<span style=\"color:\\1;\">\\2</span>", $str); // color
 
@@ -76,20 +102,11 @@ function replace_ubbcode($str, $extendedbbcode=false, $stdlang=false, $rootpath)
  $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" alt=\"\\3\" /></a>", $str); // bild
  $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img,([0-9]+),([0-9]+)\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" style=\"width:\\4px;height:\\5px\" alt=\"\\3\" /></a>", $str); // bild mit größe
 
-if($extendedbbcode)
-{
 // links
  $str = preg_replace("/\[\[(.+?)\|(.+?)\]\]/", "<a href=\"\\1\">\\2</a>", $str); // link with title
  $str = preg_replace("/\[\[(.+)\]\]/", "<a href=\"\\1\">\\1</a>", $str); // link without title
 // $str = eregi_replace("\[\[(.+?)\|(.+?)\]\]", "<a href=\"\\1\">\\2</a>", $str); // link with title
 // $str = eregi_replace("\[\[(.+)\]\]", "<a href=\"\\1\">\\1</a>", $str); // link without title
-}
-
-$str = eregi_replace("quote\\]","quote]",$str); // make lower case
-$str = eregi_replace("\[quote\]\r\n", '<blockquote><smallfont><b>quote:</b><hr>', $str);
-$str = eregi_replace("\[quote\]", '<blockquote><smallfont><b>quote:</b><hr>', $str);
-$str = eregi_replace("\[/quote\]\r\n", '<hr></font></blockquote>', $str);
-$str = eregi_replace("\[/quote\]", '<hr></font></blockquote>', $str);
 
 $str = eregi_replace("\\[center]([^\\[]*)\\[/center\\]", "</p>\n<p style=\"text-align:center\">\\1</p>\n<p>", $str);
 $str = eregi_replace("\\[left]([^\\[]*)\\[/left\\]", "</p>\n<p style=\"text-align:left\">\\1</p>\n<p>", $str);
@@ -122,7 +139,7 @@ $preg = array(
 
 
 // code
-$i=0;
+/*$i=0;
  while(($ereg= preg_match("/\[code(=(.+?))*\](.+?)\[\/code\]/s", $str,$reg)) && $i < 10)
  {
   $i++;
@@ -149,7 +166,13 @@ $i=0;
   $str2 = preg_replace("/\n<\/span><\/code>$/", '</span></code>', $str2);
 
   $str = preg_replace("/\[code(=({$lang}))*\](.+?)\[\/code\]/s", "</p>\n<pre class=\"code\">\n{$str2}\n</pre>\n<p>", $str, 1);
- }
+ }*/
+ #var_dump($code_ids);
+  foreach($code_ids as $c_id => $code_str)
+  {
+      $out = 0;
+      $str = preg_replace("/\[code_id={$c_id}\/\]/", $code_str, $str, 1, $out);
+  }
 
 return $str;
 }

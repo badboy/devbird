@@ -19,20 +19,23 @@ include('../config/config.php');
  $db_prefix = TABLE_PREFIX;
  if (mysqli_connect_errno() != 0)
  {
-  die_save("<p>Konnte nicht zur Datenbank verbinden. Sind die Daten vielleicht falsch?</p><p><a href=\"settings.php\">Zurück</a></p>");
+ 	die_save("<p>Konnte nicht zur Datenbank verbinden. Sind die Daten vielleicht falsch?</p><p><a href=\"settings.php\">Zurück</a></p>");
  }
 
  // ändere Tabellen
  include 'sql_querys.php';
- if($DB->query($add_pages))
+ foreach($edit_tables as $query)
  {
-   echo '<p style="color:green;">Tabelle \'', $db_prefix, 'pages\' erfolgreich erfolgreich angelegt!</p>', "\n";
- }
- else
- {
-   echo '<p style="color:red;">Ändern der Tabelle \'', $db_prefix, 'news\' ist fehlgeschlagen! ('.$DB->error.')</p>', "\n";
-   $error = true;
- }
+	if($DB->query($query))
+ 	{
+   			echo '<p style="color:green;">Tabelle erfolgreich geändert!</p>', "\n";
+ 	}
+ 	else
+ 	{
+		echo '<p style="color:red;">Ändern der Tabellen fehlgeschlagen! ('.$DB->error.')</p>', "\n";
+		$error = true;
+ 	}
+}
 
  if($error) die_save('Beim Ändern der Tabellen in der Datenbank scheint ein Fehler aufgetreten zu sein. So kann Devbird aber nicht aktualisiert werden.');
 

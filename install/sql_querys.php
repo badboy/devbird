@@ -117,9 +117,8 @@ INSERT INTO `{$db_prefix}settings` (`name`, `type`, `value`, `possibilities`, `d
 ('Design', 3, 'default', '\$dir:/design/', 'Das gewählte Design', 1, 5),
 ('Kommentare', 2, 'an', 'an|aus', 'Kommentare generell erlauben?', 1, 6),
 ('Zeichensatz', 2, 'UTF-8', 'UTF-8|ISO-8859-15', 'Der auf der Seite verwendete Zeichensatz', 1, 7),
-('Extra-BB-Codes', 2, 'aus', 'an|aus', 'z.B. **fett**, __unterstrichen__ oder //italic//', 1, 8),
-('AJAX-Autosave', 2, 'an', 'an|aus', 'Soll der Editor mittels AJAX Artikel automatisch zwischenspeichern?', 1, 9),
-('Standardcodesprache', 3, 'c', '\$dir:/admin/geshi/geshi/ -.php', 'Standardmäßig verwendete Sprache für GeSHi (Syntaxhighlighter)', 1, 10);
+('AJAX-Autosave', 2, 'an', 'an|aus', 'Soll der Editor mittels AJAX Artikel automatisch zwischenspeichern?', 1, 8),
+('Standardcodesprache', 3, 'c', '\$dir:/admin/geshi/geshi/ -.php', 'Standardmäßig verwendete Sprache für GeSHi (Syntaxhighlighter)', 1, 9);
 SETTINGS;
 
 $passwd = sha1($user_password);

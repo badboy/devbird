@@ -1,32 +1,5 @@
-function ajax_request()
-{
- var rreq = null;
-	try
-	{
-		rreq = new XMLHttpRequest();
-	}
-	catch(e1)
-	{
-		try
-		{
-			rreq = new ActiveXObject("Msxml2.XMLHTTP");
-		}
-		catch(e2)
-		{
-			try
-			{
-				rreq = new ActiveXObject("Microsoft.XMLHTTP");
-			}
-			catch(e3)
-			{
-				rreq = null;
-				alert("ActiveX Error!");
-			}
-		}
-	}
- return rreq;
-}
-
+var blogurl = "/admin";
+var interval = null;
 
 function insert(aTag, eTag) {
   var input = document.getElementById('article_content');
@@ -82,7 +55,7 @@ function insert(aTag, eTag) {
   }
 }
 
-function editor_add(val)
+function editorAdd(val)
 {
  var _obj = document.getElementById('msg');
  switch(val) {
@@ -137,15 +110,17 @@ function editor_add(val)
  }
 }
 
-// EDITOR AJAX FUNCTIONS
-var blogurl = "http://localhost/devbird_git/admin";
-var interval = null;
+function addTag(tag)
+{
+  var t = $('a_tags');
+  if(t.value.indexOf(tag) < 0)
+    t.value += tag+' ';
+}
 
 function SaveArticleHandle(response)
 {
  output = document.getElementById('status');
  id_output = document.getElementById('article_id');
-/* alert(response.responseText);*/
  var data = response.responseJSON;
  if(data.status == 'error')
  {
@@ -178,32 +153,32 @@ function saveArticle()
 {
  var form = $('article_editor');
  var params = 'js_save=true&'+Form.serialize(form);
-/* alert(params);*/
+
  new Ajax.Request(blogurl+'/ajax_save_article.php', {asynchronous:true, evalScripts:true, parameters:params, onComplete: SaveArticleHandle });
 }
 
-function start_saving()
+function startSaving()
 {
  saveArticle();
- interval = setInterval("save_article()", 180000);
+ interval = setInterval("saveArticle()", 180000);
 }
 
-function editor_init()
+function editorInit()
 {
  if(document.getElementById('article_id').value == 0)
  {
-   window.onbeforeunload = confirm_exit
+   window.onbeforeunload = confirmExit
  }
- setTimeout("start_saving()", 90000); /* 90000 */
+ setTimeout("startSaving()", 90000);
 }
 
-function editor_close()
+function editorClose()
 {
  window.onbeforeunload = null;
  return true;
 }
 
-function confirm_exit()
+function confirmExit()
 {
  return "Du bearbeitest gerade einen Artikel. Dieser ist noch nicht gespeichert. Wenn du die Seite jetzt verlässt, verschwinden alle Änderungen.\nBist du sicher?";
 }

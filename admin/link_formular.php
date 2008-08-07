@@ -2,9 +2,9 @@
 if(!defined('IN_DEVBIRD')) die("Direct access not allowed");
 
 $form_closed = isset($form_closed) ? $form_closed : false;
-$new_name = isset($new_name) ? $new_name : '';
-$new_desc = isset($new_desc) ? $new_desc : '';
-$new_link = isset($new_link) ? $new_link : '';
+$new_name = isset($new_name) ? stripslashes($new_name) : '';
+$new_desc = isset($new_desc) ? stripslashes($new_desc) : '';
+$new_link = isset($new_link) ? stripslashes($new_link) : '';
 
 if(isset($_POST['new_link_save']))
 {
@@ -50,6 +50,9 @@ if($_GET['action'] == 'edit' && isset($_GET['id']))
 {
  $id = htmlspecialchars($_GET['id']);
  $link = $Blog->get_link($id);
+ $link_name = stripslashes($link->name);
+ $link_desc = stripslashes($link->desc);
+ $link_link = stripslashes($link->link);
 ?>
 <form action="<?=$Blog->adminrootpath; ?>/link_formular.db/<?=$id ?>/edit" method="post">
 <p>
@@ -73,9 +76,9 @@ for($i=1;$i<=$max_links;$i++)
  }
 ?>
  <input type="hidden" name="id" value="<?=$link->id ?>" />
- <input type="text" class="bigger_input" name="name" value="<?= $link->name ?>" />
- <input type="text" class="bigger_input" name="desc" value="<?= $link->desc ?>" />
- <input type="text" class="bigger_input" name="link" value="<?= $link->link ?>" />
+ <input type="text" class="bigger_input" name="name" value="<?= $link_name ?>" />
+ <input type="text" class="bigger_input" name="desc" value="<?= $link_desc ?>" />
+ <input type="text" class="bigger_input" name="link" value="<?= $link_link ?>" />
  <br />
  <input type="submit" name="link_save" value="Speichern"> <input type="reset" value="Zurücksetzen">
 </p>
