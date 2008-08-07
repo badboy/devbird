@@ -44,9 +44,9 @@ if(!$p) errorExit('Article not found');
 
 $mytitle = $p->title;
 
-$myurl = $Blog->rootpath.'/'.$id.'/'.$Blog->shorttext($mytitle);
-if(strpos($comment, $myurl) == 0) errorExit('Go away, spammer');
-
+$myurl = $Blog->rootpath.'/'.$p->id.'/'.$Blog->shorttext($mytitle);
+##errorExit($myurl);
+#if(strpos($comment, $myurl) !== false) errorExit('Go away, spammer');
 	
 $comment = strip_tags($comment);
 
@@ -57,7 +57,7 @@ if(isset($_POST['title']))
 	$comment = "<strong>{$title}</strong><br />" . $comment;
 }
 
-if($Blog->save_comment($id, $blog_name, '', $url, $comment))
+if($Blog->save_comment($id, $blog_name, '', $url, $comment, false))
 {
 	header("Content-type: text/xml");  
 	echo <<<EOF

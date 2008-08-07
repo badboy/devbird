@@ -961,7 +961,7 @@ private
 		echo " </item>\n";
 	}
 
-	function save_comment($id, $name, $email, $website, $comment)
+	function save_comment($id, $name, $email, $website, $comment, $public=true)
 	{
 		if(!empty($website)) {
    			if(substr($website, 0,7) != "http://") $website = "http://".$website;
@@ -972,6 +972,7 @@ private
 		$email = $this->DB->real_escape_string($email);
 		$website = $this->DB->real_escape_string($website);
 		$comment = $this->DB->real_escape_string($comment);
+		$public = $public ? 1 : 0;
 		
 		$p = $this->getnewsbyid($id);
 		if(!$p) return false;
@@ -981,7 +982,7 @@ private
 		$ip = $this->DB->real_escape_string($_SERVER['REMOTE_ADDR']);
 		$date = time();
 
-		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '".$ip."')";
+		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$ip}', '{public}')";
 		$ret = $this->query($sql);
 #		echo $this->error();
 		return ($ret ? true : false);
