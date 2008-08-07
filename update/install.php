@@ -24,15 +24,18 @@ include('../config/config.php');
 
  // ändere Tabellen
  include 'sql_querys.php';
- if($DB->query($add_pages))
+ foreach($edit_tables as $query)
  {
-   echo '<p style="color:green;">Tabelle \'', $db_prefix, 'pages\' erfolgreich erfolgreich angelegt!</p>', "\n";
- }
- else
- {
-   echo '<p style="color:red;">Ändern der Tabelle \'', $db_prefix, 'news\' ist fehlgeschlagen! ('.$DB->error.')</p>', "\n";
-   $error = true;
- }
+	if($DB->query($query))
+ 	{
+   			echo '<p style="color:green;">Tabelle erfolgreich geändert!</p>', "\n";
+ 	}
+ 	else
+ 	{
+		echo '<p style="color:red;">Ändern der Tabellen fehlgeschlagen! ('.$DB->error.')</p>', "\n";
+		$error = true;
+ 	}
+}
 
  if($error) die_save('Beim Ändern der Tabellen in der Datenbank scheint ein Fehler aufgetreten zu sein. So kann Devbird aber nicht aktualisiert werden.');
 
