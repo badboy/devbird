@@ -443,12 +443,12 @@ class Devbird
 		if($type == "fulltext")
 		{
 			$query = "SELECT *, MATCH(titel,message) AGAINST ('{$keyword}') as score FROM {news} WHERE ";
-			$query .= "MATCH (title,message) AGAINST ('{$keyword}')";
+			$query .= "MATCH (title,message) AGAINST ('{$keyword}') AND published > 0";
 		}
 		else
 		{
 			$search_array = split(' ', $keyword);
-			$query1 = "SELECT * FROM {news} WHERE ";
+			$query1 = "SELECT * FROM {news} WHERE published > 0 AND (";
 			$query = "";
 			foreach($search_array as $word)
 			{
@@ -458,8 +458,7 @@ class Devbird
 				else
 					$query .= " OR title LIKE '%{$word}%' OR message LIKE '%{$word}%'";
 			}
-			$query = $query1 . $query;
-			$order = "ORDER BY created DESC";
+			$query = $query1 . $query . ") ORDER BY created DESC";
 		}
 
 		$res = $this->query($query);
