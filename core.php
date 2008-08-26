@@ -53,7 +53,7 @@ class Devbird
 			else $this->settings[$setting['name']] = NULL;
 		}
 		$this->rootpath = $this->settings['Bloglink'];
-		$this->adminrootpath = $this->rootpath.'/admin';http://www.google.de/search?hl=de&safe=off&client=firefox-a&rls=org.mozilla:en-US:official&hs=eNy&q=c+%2B+libcurl+%2B+ftp+rekursiv+laden&start=10&sa=N
+		$this->adminrootpath = $this->rootpath.'/admin';
 		$this->design = $this->settings['Design'];
 		$this->encoding = $this->settings['Zeichensatz'];
 
