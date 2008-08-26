@@ -48,12 +48,12 @@ class Devbird
 		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
 		{
-			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = $setting['value'];
+			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = stripslashes($setting['value']);
 #			else if($setting['type'] == '2') $this->settings[$setting['name']] = intval($setting['value']);
 			else $this->settings[$setting['name']] = NULL;
 		}
 		$this->rootpath = $this->settings['Bloglink'];
-		$this->adminrootpath = $this->rootpath.'/admin';
+		$this->adminrootpath = $this->rootpath.'/admin';http://www.google.de/search?hl=de&safe=off&client=firefox-a&rls=org.mozilla:en-US:official&hs=eNy&q=c+%2B+libcurl+%2B+ftp+rekursiv+laden&start=10&sa=N
 		$this->design = $this->settings['Design'];
 		$this->encoding = $this->settings['Zeichensatz'];
 
@@ -981,7 +981,7 @@ private
 		$ip = $this->DB->real_escape_string($_SERVER['REMOTE_ADDR']);
 		$date = time();
 
-		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$ip}', '{public}')";
+		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$ip}', '{$public}')";
 		$ret = $this->query($sql);
 #		echo $this->error();
 		return ($ret ? true : false);
