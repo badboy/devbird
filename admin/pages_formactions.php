@@ -43,7 +43,7 @@ if(isset($_POST['page_save']))
  }
 
  $page_bb = $page_content;
- $page_content = replace_ubbcode($page_content, ($Blog->settings['Extra-BB-Codes'] == 'an' ? true : false), ($Blog->settings['Standardcodesprache']), $Blog->rootpath);
+ $page_content = replace_ubbcode($page_content, ($Blog->settings['Standardcodesprache']), $Blog->rootpath);
 
  if($action == 'edit')
 	$page_public = $page_datechange ? ($page_public ? time(0) : 0) : $page_date;
