@@ -7,7 +7,7 @@ require 'classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.3.0';
+	const Version = '0.3.1';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -716,7 +716,7 @@ class Devbird
 				return;
 			}
 			else {
-	  			$comment = nl2br(htmlspecialchars($comment));
+	  			#$comment = nl2br(htmlspecialchars($comment));
 
 				if(isset($_POST['cookie_save']) && $_POST['cookie_save'] == 'on')
 				{
@@ -996,9 +996,11 @@ private
 
 	function shorttext($text)
 	{
+		$text = html_entity_decode($text);
 		$text = preg_replace('/[^a-zA-Z0-9]/', '-', $text);
 		$text = preg_replace('/-{2,}/', '-', $text);
 		$text = preg_replace('/-+$/', '', $text);
+		$text = preg_replace('/^-+/', '', $text);
 		return strtolower($text);
 	}
 

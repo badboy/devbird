@@ -6,7 +6,7 @@ require '../classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.3.0';
+	const Version = '0.3.1';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -379,6 +379,7 @@ class Devbird
 		$name = $this->DB->real_escape_string($name);
 		$email = $this->DB->real_escape_string($email);
 		$website = $this->DB->real_escape_string($website);
+		$message = nl2br(htmlspecialchars($message));
 		$message = $this->DB->real_escape_string($message);
 		$news_id = $this->DB->real_escape_string($news_id);
 		$time = time(0);
@@ -495,14 +496,17 @@ SQL_QUERY;
 
 	function shorttext($text)
 	{
+		$text = html_entity_decode($text);
 		$text = preg_replace('/[^a-zA-Z0-9]/', '-', $text);
 		$text = preg_replace('/-{2,}/', '-', $text);
 		$text = preg_replace('/-+$/', '', $text);
+		$text = preg_replace('/^-+/', '', $text);
 		return strtolower($text);
 	}
 	
 	function send_trackback($trackback_url, $article_id, $article_title, $article_content)
     {
+    	$ret_array = array('error'=>0);
     	$url = $this->rootpath.'/'.$article_id.'/'.$this->shorttext($article_title);
 
 		$blogname = $this->settings['Blogname'];
@@ -559,13 +563,13 @@ SQL_QUERY;
 		$result;
 		if(!preg_match("/content-type: (.+)/i", $header, $result))
 		{
-			return array('error'=>1, 'message'=>'Server sendet keinen Content-Type.');
+			$ret_array = array('error'=>0, 'warning'=>1, 'message'=>'Server sendet keinen Content-Type.');
 		}
 
 		$cot = trim($result[1]);
 		if(!preg_match('/^text\/xml/i', $cot))
 		{
-			return array('error'=>1, 'message'=>'Server sendet falschen Content-Type.');
+			$ret_array = array('error'=>0, 'warning'=>1, 'message'=>'Server sendet falschen Content-Type.');
 		}
 		
 		if(strpos($body, '<error>0</error>'))
@@ -581,7 +585,7 @@ SQL_QUERY;
 			return array('error'=>1, 'message'=>'Server liefert kein Resultat.');
 
 		
-        return array('error'=>0);
+        return $ret_array;
     }
 }
 
