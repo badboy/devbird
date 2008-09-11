@@ -970,6 +970,7 @@ private
 		$name = $this->DB->real_escape_string($name);
 		$email = $this->DB->real_escape_string($email);
 		$website = $this->DB->real_escape_string($website);
+		$comment = nl2br(htmlspecialchars($comment));
 		$comment = $this->DB->real_escape_string($comment);
 		$public = $public ? 1 : 0;
 		
