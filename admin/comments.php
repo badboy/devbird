@@ -44,7 +44,7 @@ for($i = 0; $i < $seitenanz; $i++) {
  if ($i==$cur_page)
    echo "<span class=\"page_now\">".($i+1)."</span>";
  else
-   echo"<a class=\"page\" href=\"{$Blog->adminrootpath}/article.db.{$i}\">".($i+1)."</a>";
+   echo"<a class=\"page\" href=\"{$Blog->adminrootpath}/comments.db.{$i}\">".($i+1)."</a>";
 }
 ?>
 
