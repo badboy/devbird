@@ -3,7 +3,8 @@
 error_reporting(E_ALL | E_STRICT);
 
 require 'classes/MathCaptcha.class.php';
-require 'classes/user.class.php';
+//require 'classes/user.class.php';
+require_once 'classes/new_user.class.php';
 
 class Devbird
 {
@@ -26,7 +27,11 @@ class Devbird
 	var $newsbox = 'newsbox.php';
 	var $commentbox = 'comment.php';
 
+	var $salt_pw;
+
 	var $user;
+
+	public static $db_con = NULL;
 
 	function __construct()
 	{
@@ -40,10 +45,15 @@ class Devbird
 			'password'=> $mysql_password,
 			'database'=> $mysql_database
 		);
+		if(isset($password_salt))
+			$salt_pw = $password_salt;
+		else
+			$salt_pw = mt_rand();
 
 		$this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
 		if(mysqli_connect_errno())
 			die("Can't connect to database");
+		self::$db_con = $this->DB;
 
 		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
@@ -58,8 +68,9 @@ class Devbird
 		$this->encoding = $this->settings['Zeichensatz'];
 
 		session_start();
-		$this->user = new User($this);
-		$this->user->is_online();
+		#$this->user = new User($this);
+		#$this->user = new User();
+		#$this->user->is_online();
 	}
 
 	function include_lightbox()
@@ -73,6 +84,16 @@ class Devbird
 	function error()
 	{
 		return $this->DB->error;
+	}
+
+	public static function oquery($query_string)
+	{
+		$allowed_tables = array('links', 'news', 'news_comments', 'settings', 'user', 'pages');
+		$joined = join('|', $allowed_tables);
+
+		$query_string = preg_replace("/\{({$joined})}/",TABLE_PREFIX . "$1", $query_string);
+		#echo $query_string, "\n";
+		return Devbird::$db_con->query($query_string);
 	}
 
 	function query($query_string, $save_last=true)

@@ -14,6 +14,8 @@ class User
 	var $email;
 	var $id;
 
+	var $salt;
+
 	private $rights;
 	private $devbird;
 	private $right_strings = array('edit_settings' => 8, 'edit_articles' => 4, 'visit_admin' => 2, 'comment_articles' => 1, 'nothing' => 0);
@@ -87,7 +89,7 @@ class User
 		$sql = "SELECT * FROM {user} WHERE `name`='{$name}' AND `password` = '{$password}' LIMIT 1";
 		$res = $this->devbird->query($sql);
 		if(!$res) return false;
-		if($res->num_rows == 0) return false;
+		if($res->num_rows != 1) return false;
 		$userinfo = $res->fetch_object();
 		if($userinfo->rights == 0) return false;
 
