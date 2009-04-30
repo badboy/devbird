@@ -55,7 +55,27 @@ class User
         return true;
     }
 
-    static function find_by_username($user)
+    function has_right($right)
+	{
+		if(empty($this->rights)) return false;
+		if(isset($this->right_strings[$right]))
+		{
+			if($this->rights == 0) return false;
+			$no = $this->right_strings[$right];
+			#die($this->rights.'&amp;'.$no.'='.($this->rights & $no));
+			return (($this->rights & $no) == $no);
+		}
+		return false;
+    }
+
+    function login($password)
+    {
+        $hashed = sha1('--' . $this->salt . '--' . $password);
+        $logged_in = $hashed == $this->password_hash;
+        if(!$logged_in) return false;
+    }
+
+    static function find_by_name($user)
     {
         $user = Devbird::$db_con->real_escape_string($user);
         $res = Devbird::oquery("SELECT * FROM {user} WHERE `name` = '{$user}' LIMIT 1");
@@ -78,6 +98,6 @@ class User
     }
 }
 
-var_dump(User::find_by_username('admin'));
+var_dump(User::find_by_name('admin'));
 
 ?>

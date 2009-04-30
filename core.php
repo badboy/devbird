@@ -71,6 +71,11 @@ class Devbird
 		#$this->user = new User($this);
 		#$this->user = new User();
 		#$this->user->is_online();
+		if(isset($_SESSION['logged_in']) && isset($_SESSION['username']) && !empty($_SESSION['username']))
+		{
+			$this->user = User::find_by_name($_SESSION['username']);
+			if($this->user) $this->user->is_online();
+		}
 	}
 
 	function include_lightbox()
