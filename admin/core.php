@@ -1,12 +1,11 @@
 <?php
-
 error_reporting(E_ALL | E_STRICT);
 
-require '../classes/new_user.class.php';
+require_once '../classes/new_user.class.php';
 
 class Devbird
 {
-	const Version = '0.3.1';
+	const Version = '0.4.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -24,6 +23,7 @@ class Devbird
 	var $user;
 
 	public static $db_con = NULL;
+    private $salt_pw;
 
 	function __construct()
 	{
@@ -37,6 +37,10 @@ class Devbird
 			'password'=> $mysql_password,
 			'database'=> $mysql_database
 		);
+		if(isset($password_salt))
+			$this->salt_pw = $password_salt;
+		else
+			$this->salt_pw = mt_rand();
 
 		 $this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
 		if(mysqli_connect_errno())
@@ -258,28 +262,6 @@ class Devbird
 		return $this->lastresult->fetch_object();
 	}
 
-	function get_user($id)
-	{
-		$id = $this->DB->real_escape_string($id);
-		$sql = "SELECT * FROM {user} WHERE `id` = '{$id}'";
-		$res = $this->query($sql);
-		if(!$res) return false;
-		return $res->fetch_object();
-	}
-
-	function get_users($without=false)
-	{
-		if($without)
-		{
-			$sql = "SELECT * FROM {user} WHERE `id` != '{$without}'";
-		}
-		else
-		{
-			$sql = "SELECT * FROM {user}";
-		}
-		return $this->query($sql);
-	}
-
 	function fetch_users()
 	{
 		if(!$this->lastresult)
@@ -305,8 +287,8 @@ class Devbird
 			if(empty($password))
 				return false;
 
-			$password = $this->DB->real_escape_string(sha1($password));
-			$sql = "INSERT INTO {user} (`name`, `rights`, `password`, `mail`, `use_cookies`) VALUES ('{$name}', '{$rights}', '{$password}', '{$mail}', '{$cookies}')";
+			$hashed = sha1('--' . $this->salt_pw . '--' . $password);
+			$sql = "INSERT INTO {user} (`name`, `rights`, `password`, `mail`, `use_cookies`, `salt`) VALUES ('{$name}', '{$rights}', '{$hashed}', '{$mail}', '{$cookies}', '{$this->salt_pw}')";
 		}
 		else
 		{
@@ -319,11 +301,11 @@ class Devbird
 			}
 			else
 			{
-				$password = $this->DB->real_escape_string(sha1($password));
+				$hashed = sha1('--' . $this->salt_pw . '--' . $password);
 				if($rights_disabled)
-					$sql = "UPDATE {user} SET `name`='{$name}', `password`='{$password}', `mail`='{$mail}', `use_cookies`='{$cookies}' WHERE `id` = '{$id}'";
+					$sql = "UPDATE {user} SET `name`='{$name}', `password`='{$password}', `mail`='{$mail}', `use_cookies`='{$cookies}', `salt`='{$this->salt_pw}' WHERE `id` = '{$id}'";
 				else
-					$sql = "UPDATE {user} SET `name`='{$name}', `rights`='{$rights}', `password`='{$password}', `mail`='{$mail}', `use_cookies`='{$cookies}' WHERE `id` = '{$id}'";
+					$sql = "UPDATE {user} SET `name`='{$name}', `rights`='{$rights}', `password`='{$hashed}', `mail`='{$mail}', `use_cookies`='{$cookies}', `salt`='{$this->salt_pw}' WHERE `id` = '{$id}'";
 			}
 		}
 		$res = $this->query($sql);

@@ -2,27 +2,27 @@
 require 'core.php';
 $possible_sites = array('overview', 'article', 'comments', 'links', 'user', 'settings', 'formular', 'link_formular', 'comment_formular', 'user_formular', 'pages', 'pages_formular', 'login', 'logout');
 $title = array(
-'overview' => '&Uuml;bersicht',
-'article'=>'Artikel', 
-'comments' => 'Kommentare',
-'links' => 'Links', 
-'user' => 'User',
-'settings' => 'Einstellungen',
-'formular' => 'Artikel eintragen',
-'link_formular' => 'Link eintragen',
-'comment_formular' => 'Kommentar lesen',
-'user_formular' => 'Userdaten bearbeiten',
-'pages' => 'Unterseiten',
-'pages_formular' => 'Unterseite eintragen',
-'login' => 'Einloggen',
-'logout' => 'Ausloggen'
+	'overview' => '&Uuml;bersicht',
+	'article'=>'Artikel', 
+	'comments' => 'Kommentare',
+	'links' => 'Links', 
+	'user' => 'User',
+	'settings' => 'Einstellungen',
+	'formular' => 'Artikel eintragen',
+	'link_formular' => 'Link eintragen',
+	'comment_formular' => 'Kommentar lesen',
+	'user_formular' => 'Userdaten bearbeiten',
+	'pages' => 'Unterseiten',
+	'pages_formular' => 'Unterseite eintragen',
+	'login' => 'Einloggen',
+	'logout' => 'Ausloggen'
 );
 $cur_site = '';
 
 if(!isset($_GET['site']))
- $cur_site = 'overview';
+	$cur_site = 'overview';
 else
- $cur_site = htmlspecialchars($_GET['site']);
+	$cur_site = htmlspecialchars($_GET['site']);
 
 if(!in_array($cur_site, $possible_sites))
 	header("Location: {$Blog->rootpath}/error");
@@ -36,7 +36,6 @@ if(!$Blog->user->is_online() || $cur_site == 'login')
 	include 'footer.php';
 	return;
 }
-
 if($cur_site == 'logout')
 {
 	$cur_title = 'Logout';

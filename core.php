@@ -8,7 +8,7 @@ require_once 'classes/new_user.class.php';
 
 class Devbird
 {
-	const Version = '0.3.1';
+	const Version = '0.4.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -34,7 +34,7 @@ class Devbird
 	public static $db_con = NULL;
 
 	function __construct()
-	{
+    {
 		date_default_timezone_set('Europe/Berlin');
 		define('IN_CORE', true);
 		require 'config/config.php';
@@ -45,10 +45,6 @@ class Devbird
 			'password'=> $mysql_password,
 			'database'=> $mysql_database
 		);
-		if(isset($password_salt))
-			$salt_pw = $password_salt;
-		else
-			$salt_pw = mt_rand();
 
 		$this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
 		if(mysqli_connect_errno())
