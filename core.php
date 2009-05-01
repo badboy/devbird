@@ -61,22 +61,33 @@ class Devbird
 			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = stripslashes($setting['value']);
 #			else if($setting['type'] == '2') $this->settings[$setting['name']] = intval($setting['value']);
 			else $this->settings[$setting['name']] = NULL;
-		}
+        }
 		$this->rootpath = $this->settings['Bloglink'];
 		$this->adminrootpath = $this->rootpath.'/admin';
 		$this->design = $this->settings['Design'];
 		$this->encoding = $this->settings['Zeichensatz'];
 
-		session_start();
+        session_start();
+        $username = $this->visitor_as_user();
+        if($username)
+        {
+            $this->user = User::find_by_name($username);
+            if($this->user)
+            {
+                $this->user->is_online();
+            }
+        }
 		#$this->user = new User($this);
 		#$this->user = new User();
 		#$this->user->is_online();
-		if(isset($_SESSION['logged_in']) && isset($_SESSION['username']) && !empty($_SESSION['username']))
-		{
-			$this->user = User::find_by_name($_SESSION['username']);
-			if($this->user) $this->user->is_online();
-		}
-	}
+    }
+
+    function visitor_as_user()
+    {
+        if(isset($_SESSION['username'])) return $_SESSION['username'];
+        if(isset($_COOKIE['devbird_user_name'])) return base64_decode($_COOKIE['devbird_user_name']);
+        return false; 
+    }
 
 	function include_lightbox()
 	{

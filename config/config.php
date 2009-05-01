@@ -6,7 +6,7 @@ define('TABLE_PREFIX', 'db_');
 $mysql_hostname = 'localhost';
 $mysql_username = 'root';
 $mysql_password = '';
-$mysql_database = 'devbird_main';
+$mysql_database = 'devbird_testing';
 
 $password_salt = mt_rand();
 
