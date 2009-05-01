@@ -77,9 +77,10 @@ class Devbird
                 $this->user->is_online();
             }
         }
-		#$this->user = new User($this);
-		#$this->user = new User();
-		#$this->user->is_online();
+        else
+        {
+            $this->user = new User();
+        }
     }
 
     function visitor_as_user()

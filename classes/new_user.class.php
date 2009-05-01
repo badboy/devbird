@@ -21,16 +21,20 @@ class User
     function __construct($options = array())
     {
         if(is_array($options))
-        {
-            $id = htmlspecialchars($options['id']);
-            $name = htmlspecialchars($options['name']);
-            $this->mail = htmlspecialchars($options['mail']);
-            $this->password_hash = htmlspecialchars($options['password']);
-            #$this->salt = htmlspecialchars($options['salt']);
-            $this->last_login = htmlspecialchars($options['last_login']);
-            $this->use_cookies = htmlspecialchars($options['use_cookies']);
-            $this->cookie_value = htmlspecialchars($options['cookie_value']);
-            $this->reseted_pw = htmlspecialchars($options['reseted_pw']);
+		{
+			if(!empty($options))
+			{
+				$id = htmlspecialchars($options['id']);
+				$name = htmlspecialchars($options['name']);
+				$this->mail = htmlspecialchars($options['mail']);
+				$this->password_hash = htmlspecialchars($options['password']);
+				#$this->salt = htmlspecialchars($options['salt']);
+				$this->last_login = htmlspecialchars($options['last_login']);
+				$this->use_cookies = htmlspecialchars($options['use_cookies']);
+				$this->cookie_value = htmlspecialchars($options['cookie_value']);
+				$this->reseted_pw = htmlspecialchars($options['reseted_pw']);
+				$this->rights = htmlspecialchars($options['rights']);
+			}
         }
         elseif(is_object($options))
         {
@@ -43,10 +47,7 @@ class User
             $this->use_cookies = htmlspecialchars($options->use_cookies);
             $this->cookie_value = htmlspecialchars($options->cookie_value);
             $this->reseted_pw = htmlspecialchars($options->reseted_pw);
-        }
-        else
-        {
-            die("User dead =/");
+			$this->rights = htmlspecialchars($options->rights);
         }
     }
 
@@ -156,6 +157,27 @@ class User
         $logged_in = $password == $this->password_hash;
         return $logged_in;
     }
+	
+	function logout()
+	{
+		if(!$this->session_is_set() || !$this->last_activity_valid())
+			return false;
+
+		$now = time();
+		$sql = "UPDATE {user} SET `last_login`='{$now}', `cookie_value`=NULL WHERE id='{$this->id}' LIMIT 1";
+		$res = Devbird::oquery($sql);
+
+		$this->clear_session();
+		$this->delete_cookies();
+
+		return true;
+	}
+
+	function delete_cookies()
+	{
+		setcookie('devbird_user_name', '', time()-3600, '/');
+		setcookie('devbird_user_pw', '', time()-3600, '/');
+	}
 
     static function find_by_name($user)
     {
@@ -179,7 +201,6 @@ class User
         return new User($userinfo);
     }
 }
-
 #$user = User::find_by_name('admin');
 #var_dump($user);
 #var_dump($user->is_online());

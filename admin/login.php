@@ -10,8 +10,11 @@ if(isset($_POST['user_login']))
 	}
 	else
 	{
-		if($Blog->user->login($username, $password))
+		$Blog->user = User::find_by_name($username);
+		var_dump($Blog->user);
+		if($Blog->user && $Blog->user->login($password))
 		{
+			$Blog->user->is_online();
 			header("Location: {$Blog->adminrootpath}");
 		}
 		else

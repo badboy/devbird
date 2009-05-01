@@ -41,6 +41,7 @@ if($cur_site == 'logout')
 {
 	$cur_title = 'Logout';
 	$Blog->user->logout();
+	$Blog->user = new User;
 	include 'header_user.php';
 	echo "<h1>{$cur_title}</h1>\n";
 	include 'logout.php';

@@ -2,7 +2,7 @@
 
 error_reporting(E_ALL | E_STRICT);
 
-require '../classes/user.class.php';
+require '../classes/new_user.class.php';
 
 class Devbird
 {
@@ -23,6 +23,8 @@ class Devbird
 
 	var $user;
 
+	public static $db_con = NULL;
+
 	function __construct()
 	{
 		date_default_timezone_set('Europe/Berlin');
@@ -39,6 +41,7 @@ class Devbird
 		 $this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
 		if(mysqli_connect_errno())
 			die("Can't connect to database");
+		self::$db_con = $this->DB;
 
 		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
@@ -53,8 +56,28 @@ class Devbird
 		$this->encoding = $this->settings['Zeichensatz'];
 	
 		session_start();
-		$this->user = new User($this);
-	}
+		$username = $this->visitor_as_user();
+		#var_dump($username);
+        if($username)
+        {
+            $this->user = User::find_by_name($username);
+            if($this->user)
+            {
+                $this->user->is_online();
+            }
+        }
+        else
+        {
+            $this->user = new User();
+        }
+    }
+
+    function visitor_as_user()
+    {
+        if(isset($_SESSION['username'])) return $_SESSION['username'];
+        if(isset($_COOKIE['devbird_user_name'])) return base64_decode($_COOKIE['devbird_user_name']);
+        return false; 
+    }
 
 	function error()
 	{
@@ -75,6 +98,16 @@ class Devbird
 		}
 		else
 			return $this->DB->query($query_string);
+	}
+
+	public static function oquery($query_string)
+	{
+		$allowed_tables = array('links', 'news', 'news_comments', 'settings', 'user', 'pages');
+		$joined = join('|', $allowed_tables);
+
+		$query_string = preg_replace("/\{({$joined})}/",TABLE_PREFIX . "$1", $query_string);
+		#echo $query_string, "\n";
+		return Devbird::$db_con->query($query_string);
 	}
 
 	function get_tags()
