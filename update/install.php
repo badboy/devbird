@@ -40,6 +40,14 @@ include('../config/config.php');
  if($error) die_save('Beim Ändern der Tabellen in der Datenbank scheint ein Fehler aufgetreten zu sein. So kann Devbird aber nicht aktualisiert werden.');
 
 ?>
+<br />
+<p style="text-weight: bold;font-size: 150%">
+ACHTUNG! Das Passwort des Admins wurde zurückgesetzt, um ebenfalls mit einem zufälligen Salt verschlüsselt zu werden.<br />
+Bitte unbedingt das Passwort wieder anpassen!<br />
+Neues Passwort:<br />
+<?=$new_password ?>
+</p>
+
 <br /><p><a href="ready.php">Weiter >></a></p>
 <?
 include('footer.php'); 

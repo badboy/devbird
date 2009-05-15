@@ -29,17 +29,16 @@ if($_GET['action'] == 'edit' && isset($_GET['id']))
 	else
 	{
 		define('IN_USER_FORMULAR', true);
-		$user = $Blog->get_user($_GET['id']);
+		$user = User::find_by_id($_GET['id']);
 
 		$user_name = htmlspecialchars($user->name);
 		$user_mail = htmlspecialchars($user->mail);
-		$rights = $user->rights;
 
-		if(!$Blog->user->has_right('edit_settings')) $hide_rights = true;
-		$right_sett = has_right($rights, 'edit_settings');
-		$right_art = has_right($rights, 'edit_articles');
-		$right_admin = has_right($rights, 'visit_admin');
-		$right_comm = has_right($rights, 'comment_articles');
+		if(!$user->has_right('edit_settings')) $hide_rights = true;
+		$right_sett = $user->has_right('edit_settings');
+		$right_art = $user->has_right('edit_articles');
+		$right_admin = $user->has_right('visit_admin');
+		$right_comm = $user->has_right('comment_articles');
 
 		$use_cookies = $user->use_cookies == 1;
 
