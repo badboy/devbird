@@ -1,161 +1,241 @@
 <?
+
+#require_once 'core.php';
+
 class User
 {
-/**
- 4. User darf Einstellungen bearbeiten			2 ^ 3 = 8	edit_settings
- 3. User darf Beiträge schreiben/löschen/bearbeiten	2 ^ 2 = 4	edit_articles
- 2. User darf Adminmenü betreten			2 ^ 1 = 2	visit_admin
- 1. User darf kommentieren				2 ^ 0 = 1	comment_articles
- 0. User darf garnichts (ausgeschaltet|geblockt)	0
+    var $id;
+    var $name;
+    var $mail;
+    var $password_hash;
+    var $salt;
+    var $last_login;
+    var $use_cookies;
+    var $cookie_value;
+    var $reseted_pw;
 
- alle zusammen: 8+4+2+1 = 15
-*/
-	var $name;
-	var $email;
-	var $id;
-
-	var $salt;
-
-	private $rights;
-	private $devbird;
+    private $rights;
 	private $right_strings = array('edit_settings' => 8, 'edit_articles' => 4, 'visit_admin' => 2, 'comment_articles' => 1, 'nothing' => 0);
+    
+    function __construct($options = array())
+    {
+	    if(is_array($options))
+	    {
+		    if(!empty($options))
+		    {
+			    $id = htmlspecialchars($options['id']);
+			    $name = htmlspecialchars($options['name']);
+			    $this->mail = htmlspecialchars($options['mail']);
+			    $this->password_hash = htmlspecialchars($options['password']);
+			    $this->salt = htmlspecialchars($options['salt']);
+			    $this->last_login = htmlspecialchars($options['last_login']);
+			    $this->use_cookies = htmlspecialchars($options['use_cookies']) == 1;
+			    $this->cookie_value = htmlspecialchars($options['cookie_value']);
+			    $this->reseted_pw = htmlspecialchars($options['reseted_pw']);
+			    $this->rights = htmlspecialchars($options['rights']);
+		    }
+	    }
+	    elseif(is_object($options))
+	    {
+		    $this->id = htmlspecialchars($options->id);
+		    $this->name = htmlspecialchars($options->name);
+		    $this->mail = htmlspecialchars($options->mail);
+		    $this->password_hash = htmlspecialchars($options->password);
+		    $this->salt = htmlspecialchars($options->salt);
+		    $this->last_login = htmlspecialchars($options->last_login);
+		    $this->use_cookies = htmlspecialchars($options->use_cookies) == 1;
+		    $this->cookie_value = htmlspecialchars($options->cookie_value);
+		    $this->reseted_pw = htmlspecialchars($options->reseted_pw);
+		    $this->rights = htmlspecialchars($options->rights);
+	    }
+    }
 
-	function __construct($devbird)
-	{
-		$this->devbird = $devbird;
-	}
+    function is_online()
+    {
+	    if($this->session_is_set())
+	    {
+		    if($this->last_activity_valid())
+		    {
+			    $userid = Devbird::$db_con->real_escape_string($_SESSION['userid']);
+			    $username = Devbird::$db_con->real_escape_string($_SESSION['username']);
+			    $cookievalue = Devbird::$db_con->real_escape_string($_SESSION['cookievalue']);
 
-	function is_online()
-	{
-#		print_r($_COOKIE);
-		if(isset($_SESSION['logged_in']) && isset($_SESSION['userid']) && isset($_SESSION['username']) && isset($_SESSION['last_activity']) && isset($_SESSION['cookievalue']))
-		{
-			$now = time();
-			$last = $_SESSION['last_activity'];
-			if(($now - $last) >= 3600)
-			{
-				if(isset($_COOKIE['devbird_user_name']) && isset($_COOKIE['devbird_user_pw']))
-				{
-					$username = $this->devbird->DB->real_escape_string(base64_decode($_COOKIE['devbird_user_name']));
-					$password = $this->devbird->DB->real_escape_string(base64_decode($_COOKIE['devbird_user_pw']));
-					$ret =  $this->login($username, $password, true);
-					return $ret;
-				}
-				else
-				{
-					$_SESSION['logged_in'] = false;
-					$_SESSION['userid'] = false;
-					$_SESSION['username'] = false;
-					$_SESSION['last_activity'] = false;
-					$_SESSION['cookievalue'] = false;
-					return false;
-				}
-			}
-			$userid = $this->devbird->DB->real_escape_string($_SESSION['userid']);
-			$username = $this->devbird->DB->real_escape_string($_SESSION['username']);
-			$cookievalue = $this->devbird->DB->real_escape_string($_SESSION['cookievalue']);
+			    if($userid == $this->id && $username == $this->name && $cookievalue == $this->cookie_value) 
+			    {
+				    $_SESSION['last_activity'] = time();
+				    return true;
+			    }
+			    else
+			    {
+				    return false;
+			    }
+		    }
+		    else
+		    {
+			    if($this->cookies_are_set())
+			    {
+				    $password = Devbird::$db_con->real_escape_string(base64_decode($_COOKIE['devbird_user_pw']));
+				    $ret =  $this->login_with_hashed($password);
+				    return $ret;
+			    }
+			    else
+			    {
+				    $this->clear_session();
+				    return false;
+			    }
+		    }
 
-			$sql = "SELECT * FROM {user} WHERE `id` = '{$userid}' AND `name` = '{$username}' AND `cookie_value` = '{$cookievalue}'";
-			$res = $this->devbird->query($sql);
-			if(!$res) return false;
-			if($res->num_rows != 1) return false;
-			$userinfo = $res->fetch_object();
+	    }
+	    elseif($this->cookies_are_set())
+	    {
+		    $password = Devbird::$db_con->real_escape_string(base64_decode($_COOKIE['devbird_user_pw']));
+		    $ret =  $this->login_with_hashed($password);
+		    return $ret;
+	    }
+	    return false;
+    }
 
-			$_SESSION['last_activity'] = time();
-			$this->name = htmlspecialchars($username);
-			$this->rights = $userinfo->rights;
-			$this->email = $userinfo->mail;
-			$this->id = $userinfo->id;
-			return true;
-		}
-		elseif(isset($_COOKIE['devbird_user_name']) && isset($_COOKIE['devbird_user_pw']))
-		{
-			$username = $this->devbird->DB->real_escape_string(base64_decode($_COOKIE['devbird_user_name']));
-			$password = $this->devbird->DB->real_escape_string(base64_decode($_COOKIE['devbird_user_pw']));
-			$ret =  $this->login($username, $password, true);
-			return $ret;
-		}
+    function session_is_set()
+    {
+        return (
+            isset($_SESSION['logged_in']) && 
+            isset($_SESSION['userid']) && 
+            isset($_SESSION['username']) && 
+            isset($_SESSION['last_activity']) &&
+            isset($_SESSION['cookievalue'])
+        );
+    }
 
-		return false;
-	}
+    function cookies_are_set()
+    {
+        return (
+            isset($_COOKIE['devbird_user_name']) &&
+            isset($_COOKIE['devbird_user_pw'])
+        );
+    }
 
-	function login($name, $password, $nosha=false)
-	{
-		$name = $this->devbird->DB->real_escape_string($name);
-		$password = $this->devbird->DB->real_escape_string($password);
-		if(!$nosha)
-			$password = sha1($password);
-		#echo $password;
-		$sql = "SELECT * FROM {user} WHERE `name`='{$name}' AND `password` = '{$password}' LIMIT 1";
-		$res = $this->devbird->query($sql);
+    function last_activity_valid()
+    {
+	    $now = time();
+	    $last = (int)$_SESSION['last_activity'];
+	    return (($now - $last) < 3600);
+    }
+
+    function set_session_and_cookie()
+    {
+		$this->cookie_value = md5(time().$this->id);
+
+        $_SESSION['logged_in'] = true;
+        $_SESSION['userid'] = $this->id;
+		$_SESSION['username'] = $this->name;
+        $_SESSION['last_activity'] = time();
+		$_SESSION['cookievalue'] = $this->cookie_value;
+		
+		$sql = "UPDATE {user} SET `cookie_value`='{$this->cookie_value}' WHERE id='{$this->id}'";
+		$res = Devbird::oquery($sql);
 		if(!$res) return false;
-		if($res->num_rows != 1) return false;
-		$userinfo = $res->fetch_object();
-		if($userinfo->rights == 0) return false;
 
-		$new_cookie = md5(time().$userinfo->id);
-		$sql = "UPDATE {user} SET `cookie_value`='{$new_cookie}' WHERE id='{$userinfo->id}'";
-		$res = $this->devbird->query($sql);
-		if(!$res) return false;
-
-		if($userinfo->use_cookies == 1)
+		if($this->use_cookies)
 		{
-			@setcookie('devbird_user_name', base64_encode($name), time()+60*60*24*30, '/');
-			@setcookie('devbird_user_pw', base64_encode($password), time()+60*60*24*30, '/');
+			@setcookie('devbird_user_name', base64_encode($this->name), time()+60*60*24*30, '/');
+			@setcookie('devbird_user_pw', base64_encode($this->password), time()+60*60*24*30, '/');
  		}
+    }
 
+    function clear_session()
+    {
+        $_SESSION['logged_in'] = false;
+        $_SESSION['userid'] = false;
+        $_SESSION['username'] = false;
+        $_SESSION['last_activity'] = false;
+        $_SESSION['cookievalue'] = false;
+    }
 
-		$this->name = htmlspecialchars($name);
-		$this->rights = $userinfo->rights;
-		$this->email = htmlspecialchars($userinfo->mail);
-		$this->id = $userinfo->id;
+    function delete_cookies()
+    {
+	    setcookie('devbird_user_name', '', time()-3600, '/');
+	    setcookie('devbird_user_pw', '', time()-3600, '/');
+    }
 
-		$_SESSION['userid'] = $userinfo->id;
-		$_SESSION['username'] = $userinfo->name;
-		$_SESSION['last_activity'] = time();
-		$_SESSION['cookievalue'] = $new_cookie;
-		$_SESSION['logged_in'] = true;
+    function has_right($right)
+    {
+	    if(empty($this->rights)) return false;
+	    if(isset($this->right_strings[$right]))
+	    {
+		    if($this->rights == 0) return false;
+		    $no = $this->right_strings[$right];
+		    return (($this->rights & $no) == $no);
+	    }
+	    return false;
+    }
 
-		return true;
+    function login($password)
+    {
+        $hashed = sha1('--' . $this->salt . '--' . $password);
+        $logged_in = $hashed == $this->password_hash;
+		if($logged_in) $this->set_session_and_cookie();
+		else return false;
+        return true;
+    }
+
+    function login_with_hashed($password)
+    {
+		$logged_in = $password == $this->password_hash;
+		if($logged_in) $this->set_session_and_cookie();
+		else return false;
+        return true;
+    }
+	
+    function logout()
+    {
+	    if(!$this->session_is_set() || !$this->last_activity_valid())
+		    return false;
+
+	    $now = time();
+	    $sql = "UPDATE {user} SET `last_login`='{$now}', `cookie_value`=NULL WHERE id='{$this->id}' LIMIT 1";
+	    $res = Devbird::oquery($sql);
+
+	    $this->clear_session();
+	    $this->delete_cookies();
+
+	    return true;
+    }
+
+    static function find_by_name($user)
+    {
+        $user = Devbird::$db_con->real_escape_string($user);
+        $res = Devbird::oquery("SELECT * FROM {user} WHERE `name` = '{$user}' LIMIT 1");
+        if(!$res) return false;
+		if($res->num_rows != 1) return false;
+        $userinfo = $res->fetch_object();
+        #var_dump($userinfo);
+        return new User($userinfo);
+    }
+
+    static function find_by_id($id)
+    {
+        $id = Devbird::$db_con->real_escape_string($id);
+        $res = Devbird::oquery("SELECT * FROM {user} WHERE `id` = '{$id}' LIMIT 1");
+        if(!$res) return false;
+		if($res->num_rows != 1) return false;
+        $userinfo = $res->fetch_object();
+        #var_dump($userinfo);
+        return new User($userinfo);
 	}
 
-	function logout()
+	static function all()
 	{
-		if(!isset($_SESSION['userid']) || !isset($_SESSION['logged_in']) || !isset($_SESSION['username']) || !isset($_SESSION['last_activity']) || !isset($_SESSION['cookievalue']))
-			return false;
-		$id = $_SESSION['userid'];
-		$now = time();
-		$sql = "UPDATE {user} SET `last_login`='{$now}', `cookie_value`=NULL WHERE id='{$id}' LIMIT 1";
-		$res = $this->devbird->query($sql);
+		$sql = "SELECT * FROM {user}";
+		$res = Devbird::oquery($sql);
+		if(!$res) return array();
 
-		$_SESSION['logged_in'] = false;
-		$_SESSION['userid'] = false;
-		$_SESSION['username'] = false;
-		$_SESSION['last_activity'] = false;
-		$_SESSION['cookievalue'] = false;
-		setcookie('devbird_user_name', '', time()-3600, '/');
-		setcookie('devbird_user_pw', '', time()-3600, '/');
-
-		$this->rights = 0;
-		$this->email = '';
-		$this->name = '';
-		$this->id = 0;
-		return true;
-	}
-
-	function has_right($right)
-	{
-		if(empty($this->rights)) return false;
-		if(isset($this->right_strings[$right]))
+		$users = array();
+ 		while($user = $res->fetch_object())
 		{
-			if($this->rights == 0) return false;
-			$no = $this->right_strings[$right];
-#			die($this->rights.'&amp;'.$no.'='.($this->rights & $no));
-			return (($this->rights & $no) == $no);
+			$users[] = new User($user);
 		}
-		return false;
+		return $users;
 	}
-
 }
 
 function has_right($rights, $right)
@@ -170,4 +250,8 @@ function has_right($rights, $right)
 	}
 	return false;
 }
+#	$user = User::find_by_name('admin');
+#	var_dump($user);
+#	var_dump($user->is_online());
+
 ?>

@@ -2,9 +2,8 @@
 
 error_reporting(E_ALL | E_STRICT);
 
-require 'classes/MathCaptcha.class.php';
-//require 'classes/user.class.php';
-require_once 'classes/new_user.class.php';
+require_once 'classes/MathCaptcha.class.php';
+require_once 'classes/user.class.php';
 
 class Devbird
 {
@@ -704,7 +703,7 @@ class Devbird
 		if($this->user->is_online())
 		{
 			$this->done['name'] = $this->user->name;
-			$this->done['email'] = $this->user->email;
+			$this->done['email'] = $this->user->mail;
 			$this->done['website'] = $this->rootpath;
 		}
 
