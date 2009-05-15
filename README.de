@@ -1,4 +1,4 @@
-Devbird v0.3.0 - Release: 07.08.2008
+Devbird v0.4.0 - Release: 16.05.2009
 ------------------------------------------------------------
  by BadBoy_
 
@@ -7,7 +7,7 @@ Devbird v0.3.0 - Release: 07.08.2008
  (siehe LICENSE)
 
 -- Was ist Devbird? --
-Devbird ist ein in PHP geschriebenes, vollwertiges aber schlankes Blogsystem.
+Devbird ist ein in PHP geschriebenes, vollwertiges, aber schlankes Blogsystem.
 
 -- Für wen ist Devbird geeignet? --
 Devbird ist ein vollwertiges Blogsystem.
@@ -48,3 +48,17 @@ die alle aufzuzählen wird viel.
  dann noch Psyko, für das neue Design, aber auch für das alte (und die Vorlage für ein tolles neues :D)
  allen Pytalern, die mir ab und zu hier und da geholfen haben
  dem ganzen Rest, allen Machern von den Webseiten, wo ich mir Anregungen und Tipps geholt habe, und, und, und.
+
+-- Wie geht es weiter mit Devbird? --
+Eine weitere gute Frage.
+Ich denke nicht, dass es irgendwie weitergeht. In dieser Version hab ich nochmal ein kleines Sicherheitsfeature 
+eingebaut, aber das war's auch schon.
+Schon seit längerer Zeit bin ich mit dem Code absolut nicht mehr zufrieden, außerdem mag ich PHP nicht mehr wirklich.
+Ob es also jemals eine weitere Version von Devbird gibt, ist höchstfraglich.
+
+-- Was gibt's Neues in 0.4.0 --
+"Passwörter werden nun gesalzen."
+Der Passworthash wird nun nicht mehr allein aus dem Klartextpassword berechnet, sondern dem ganzen wird ein zufälliger
+Salt beigemischt.
+So ist es schwieriger, falls jemand mal an die Hashes kommen sollte, das Klartextpasswort durch Brute-Forcing herauszufinden.
+Aber am besten sorgt man einfach dafür, dass nie jemand die Hashes der Userpasswörter zu Gesicht bekommt.
