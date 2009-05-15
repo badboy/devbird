@@ -23,7 +23,7 @@ class Devbird
 	var $user;
 
 	public static $db_con = NULL;
-    private $salt_pw;
+	private $salt_pw;
 
 	function __construct()
 	{

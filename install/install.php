@@ -104,7 +104,7 @@ CONFIG_CONTENT;
    die_save('eMail-Adresse des Admin-Accounts ist ungültig.');
  }
 
- if(strlen($user_password) <  5 || strlen($user_password) < 0 || strlen($user_password) > 25)
+ if(strlen($user_password) <  5 || strlen($user_password) < 0 || strlen($user_password) > 100)
  {
    die_save('Passwort muss mindestens 5 Zeichen haben!');
  }

@@ -1013,10 +1013,9 @@ private
 		$p = $p->fetch_object();
 		if(!$p) return false;
 
-		$ip = $this->DB->real_escape_string($_SERVER['REMOTE_ADDR']);
 		$date = time();
 
-		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$ip}', '{$public}')";
+		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$public}')";
 		$ret = $this->query($sql);
 #		echo $this->error();
 		return ($ret ? true : false);
