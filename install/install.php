@@ -50,6 +50,8 @@ define('TABLE_PREFIX', '{$db_prefix}');
 \$mysql_username = '{$db_user}';
 \$mysql_password = '{$db_password}';
 \$mysql_database = '{$db_db}';
+
+$password_salt = mt_rand();
 ?>
 CONFIG_CONTENT;
 
