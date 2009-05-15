@@ -4,7 +4,6 @@ include('header.php');
 
 $dir = getcwd();
 chdir("..");
-#print_r($_SERVER);
 $basedir = dirname(dirname($_SERVER['PHP_SELF']));
 $uri = 'http://'.$_SERVER['HTTP_HOST'].$basedir;
 $path_dir = getcwd();

@@ -2,12 +2,12 @@
 
 error_reporting(E_ALL | E_STRICT);
 
-require 'classes/MathCaptcha.class.php';
-require 'classes/user.class.php';
+require_once 'classes/MathCaptcha.class.php';
+require_once 'classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.3.1';
+	const Version = '0.4.0';
 
 	var $DB = false;
 	var $lastresult = false;
@@ -26,10 +26,14 @@ class Devbird
 	var $newsbox = 'newsbox.php';
 	var $commentbox = 'comment.php';
 
+	var $salt_pw;
+
 	var $user;
 
+	public static $db_con = NULL;
+
 	function __construct()
-	{
+    {
 		date_default_timezone_set('Europe/Berlin');
 		define('IN_CORE', true);
 		require 'config/config.php';
@@ -44,6 +48,7 @@ class Devbird
 		$this->DB = new mysqli($dbconfig['hostname'], $dbconfig['username'], $dbconfig['password'], $dbconfig['database']);
 		if(mysqli_connect_errno())
 			die("Can't connect to database");
+		self::$db_con = $this->DB;
 
 		$res = $this->query('SELECT type, name, value FROM {settings}') or die($this->error());
 		while($setting = $res->fetch_array())
@@ -51,16 +56,34 @@ class Devbird
 			if($setting['type'] == '1' || $setting['type'] == '2' || $setting['type'] == '3') $this->settings[$setting['name']] = stripslashes($setting['value']);
 #			else if($setting['type'] == '2') $this->settings[$setting['name']] = intval($setting['value']);
 			else $this->settings[$setting['name']] = NULL;
-		}
+        }
 		$this->rootpath = $this->settings['Bloglink'];
 		$this->adminrootpath = $this->rootpath.'/admin';
 		$this->design = $this->settings['Design'];
 		$this->encoding = $this->settings['Zeichensatz'];
 
-		session_start();
-		$this->user = new User($this);
-		$this->user->is_online();
-	}
+        session_start();
+        $username = $this->visitor_as_user();
+        if($username)
+        {
+            $this->user = User::find_by_name($username);
+            if($this->user)
+            {
+                $this->user->is_online();
+            }
+        }
+        else
+        {
+            $this->user = new User();
+        }
+    }
+
+    function visitor_as_user()
+    {
+        if(isset($_SESSION['username'])) return $_SESSION['username'];
+        if(isset($_COOKIE['devbird_user_name'])) return base64_decode($_COOKIE['devbird_user_name']);
+        return false; 
+    }
 
 	function include_lightbox()
 	{
@@ -73,6 +96,16 @@ class Devbird
 	function error()
 	{
 		return $this->DB->error;
+	}
+
+	public static function oquery($query_string)
+	{
+		$allowed_tables = array('links', 'news', 'news_comments', 'settings', 'user', 'pages');
+		$joined = join('|', $allowed_tables);
+
+		$query_string = preg_replace("/\{({$joined})}/",TABLE_PREFIX . "$1", $query_string);
+		#echo $query_string, "\n";
+		return Devbird::$db_con->query($query_string);
 	}
 
 	function query($query_string, $save_last=true)
@@ -670,7 +703,7 @@ class Devbird
 		if($this->user->is_online())
 		{
 			$this->done['name'] = $this->user->name;
-			$this->done['email'] = $this->user->email;
+			$this->done['email'] = $this->user->mail;
 			$this->done['website'] = $this->rootpath;
 		}
 
@@ -979,10 +1012,9 @@ private
 		$p = $p->fetch_object();
 		if(!$p) return false;
 
-		$ip = $this->DB->real_escape_string($_SERVER['REMOTE_ADDR']);
 		$date = time();
 
-		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, ip, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$ip}', '{$public}')";
+		$sql = "INSERT INTO {news_comments} (news_id, name, email, website, msg, date, public) VALUES ('$id', '$name', '$email', '$website', '$comment', '{$date}', '{$public}')";
 		$ret = $this->query($sql);
 #		echo $this->error();
 		return ($ret ? true : false);

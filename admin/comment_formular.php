@@ -102,7 +102,7 @@ if($_GET['action'] == 'show' && isset($_GET['id']))
  </fieldset>
  <fieldset>
   <legend>eMail</legend>
-   <p><input type="text" class="bigger_input" name="mail" value="<?=$Blog->user->email ?>" /></p>
+   <p><input type="text" class="bigger_input" name="mail" value="<?=$Blog->user->mail ?>" /></p>
  </fieldset>
  <fieldset>
   <legend>Webseite</legend>
