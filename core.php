@@ -7,7 +7,7 @@ require_once 'classes/user.class.php';
 
 class Devbird
 {
-	const Version = '0.4.0';
+	const Version = '0.4.2';
 
 	var $DB = false;
 	var $lastresult = false;

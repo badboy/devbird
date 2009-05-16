@@ -2,7 +2,7 @@
 $cur_site = 'overview';
 include('header.php');
 ?>
-<h1>Übersicht (Devbird v0.4.0)</h1>
+<h1>Übersicht (Devbird v0.4.2)</h1>
 <h2>Was ist Devbird?</h2>
 <p>Devbird ist ein in PHP geschriebenes, vollwertiges, aber schlankes Blogsystem.</p>
 <h2>Für wen ist Devbird geeignet?</h2>
