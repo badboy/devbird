@@ -1,4 +1,4 @@
-var blogurl = "/admin";
+var blogurl = "http://badboy.pytalhost.de/admin";
 var interval = null;
 
 function insert(aTag, eTag) {
@@ -73,7 +73,7 @@ function editorAdd(val)
 	 insert('[s]', '[/s]');
 	 break;
   case 'url': 
-   var eingabe = window.prompt("Url:   (http:// nicht vergessen!)", "http://");
+   var eingabe = window.prompt("Url: (http:// nicht vergessen!)", "http://");
    var _name = window.prompt("Name: (alternativ)");
    if(eingabe == null || eingabe == "http://") return;
    if(_name == null) 
@@ -112,16 +112,18 @@ function editorAdd(val)
 
 function addTag(tag)
 {
-  var t = $('a_tags');
-  if(t.value.indexOf(tag) < 0)
-    t.value += tag+' ';
+	var curtags = $('#a_tags').val();
+    if(curtags.indexOf(tag) < 0)
+	{
+    	$('#a_tags').val(curtags + tag + ' ');
+		tagcount += 1;
+	}
 }
 
-function SaveArticleHandle(response)
+function SaveArticleHandle(data)
 {
- output = document.getElementById('status');
- id_output = document.getElementById('article_id');
- var data = response.responseJSON;
+ output = $('#status');
+ id_output = $('#article_id');
  if(data.status == 'error')
  {
    switch(data.code)
@@ -151,10 +153,37 @@ function SaveArticleHandle(response)
 
 function saveArticle()
 {
- var form = $('article_editor');
- var params = 'js_save=true&'+Form.serialize(form);
+ var params = 'js_save=true&'+$('#article_editor').serialize();
 
- new Ajax.Request(blogurl+'/ajax_save_article.php', {asynchronous:true, evalScripts:true, parameters:params, onComplete: SaveArticleHandle });
+ $.getJSON(blogurl+'/ajax_save_article.php', params, function(data) {
+	 output = $('#status');
+	 id_output = $('#article_id');
+	 if(data.status == 'error')
+	 {
+	   switch(data.code)
+	   {
+		 case 1000: output.val("Fehler beim Speichern. Daten konnten nicht übermittelt werden!");
+			break;
+		 case 1001: output.val("Ohne Text wird nichts gespeichert!");
+			break;
+		 case 1002: output.val("Artikel konnte nicht gespeichert werden: "+data.message);
+			break;
+		 case 1003: output.val("Artikel konnte nicht gespeichert werden: "+data.message);
+			break;
+		 case 1004: output.val("Fehler beim Lesen der Datenbank: "+data.message);
+			break;
+		 case 1005: output.val("Es wurde nichts zurückgeliefert!");
+			break;
+		 case 1006: output.val("Nicht eingeloggt!");
+			break;
+	   }
+	 }
+	 else
+	 {
+	   id_output.val(data.id);
+	   output.val("Gespeichert: "+data.date);
+	 } 
+ });
 }
 
 function startSaving()
@@ -165,7 +194,7 @@ function startSaving()
 
 function editorInit()
 {
- if(document.getElementById('article_id').value == 0)
+ if($('#article_id').val()==0)
  {
    window.onbeforeunload = confirmExit
  }

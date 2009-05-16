@@ -85,12 +85,19 @@ class Devbird
         return false; 
     }
 
-	function include_lightbox()
+	function include_javascript()
 	{
-		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/prototype.js"></script>'."\n";
-		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/scriptaculous.js?load=effects,builder"></script>'."\n";
-		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/lightbox.js"></script>'."\n";
-		echo '<link rel="stylesheet" href="'.$this->rootpath.'/css/lightbox.css" type="text/css" media="screen" />'."\n";
+        echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/jquery.js"></script>'."\n";
+		echo '<script type="text/javascript" src="'.$this->rootpath.'/javascript/facebox/facebox.js"></script>'."\n";
+		echo '<link rel="stylesheet" href="'.$this->rootpath.'/javascript/facebox/facebox.css" type="text/css" media="screen" />'."\n";
+		echo <<<END
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+  $('a[rel*=facebox]').facebox();
+  $('a[rel*=lightbox]').facebox();
+}); 
+</script>
+END;
 	}
 
 	function error()

@@ -9,7 +9,7 @@
  <link rel="shortcut icon" href="<?=$Blog->rootpath ?>/favicon.ico" type="image/x-icon" /> 
  <link rel="alternate"  type="application/rss+xml" title="<?=$Blog->settings['Blogbeschreibung'] ?>" href="<?=$Blog->rootpath ?>/feed.php" />
 
-<? $Blog->include_lightbox(); ?>
+<? $Blog->include_javascript(); ?>
 
  <link rel="stylesheet" type="text/css" href="css/basic.css" media="screen" />
  <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />

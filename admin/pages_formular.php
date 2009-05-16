@@ -106,7 +106,7 @@ if(!isset($hide_form) || !$hide_form) {
  <fieldset>
   <legend>Artikel</legend>
    <p style="float:right;">
-    <a href="javascript:void(0);" onclick="editor_add('newbox');">Neue Newsbox durch {{newbox}} erzeugen</a>
+    <a href="javascript:void(0);" onclick="editorAdd('newbox');">Neue Newsbox durch {{newbox}} erzeugen</a>
    </p>
    <p>
     <img class="insbutton" src="<?=$Blog->rootpath ?>/images/bold.gif" alt="Bold" title="Bold [b][/b]" onclick="editor_add('b');" >
