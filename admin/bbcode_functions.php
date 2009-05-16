@@ -99,8 +99,8 @@ function replace_ubbcode($str, $stdlang=false, $rootpath) {
  $str = eregi_replace("\\[flash]([^\\[]*)\\[/flash\\]","<object data=\"\\1\" type=\"application/x-shockwave-flash\" style=\"width: 425px; height: 355px\">\n <param name=\"movie\" value=\"\\1\" />\n <param name=\"wmode\" value=\"transparent\" />\n</object>", $str);
 
 // pic
- $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" alt=\"\\3\" /></a>", $str); // bild
- $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img,([0-9]+),([0-9]+)\\]","<a href=\"\\3\" rel=\"lightbox[\\2]\"><img src=\"\\3\" style=\"width:\\4px;height:\\5px\" alt=\"\\3\" /></a>", $str); // bild mit größe
+ $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img\\]","<a href=\"\\3\" rel=\"facebox\"><img src=\"\\3\" alt=\"\\3\" /></a>", $str); // bild
+ $str = eregi_replace("\\[img(=([^\\[]*))*\\]([^\\[]*)\\[/img,([0-9]+),([0-9]+)\\]","<a href=\"\\3\" rel=\"facebox\"><img src=\"\\3\" style=\"width:\\4px;height:\\5px\" alt=\"\\3\" /></a>", $str); // bild mit größe
 
 // links
  $str = preg_replace("/\[\[(.+?)\|(.+?)\]\]/", "<a href=\"\\1\">\\2</a>", $str); // link with title
