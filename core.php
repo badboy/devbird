@@ -619,7 +619,7 @@ END;
 					include $comment_path;
 				}
 			}
-			if(!$commenthead || strstr($commenthead, '<div')) echo "</div>\n";
+			if(!$commenthead || substr($commenthead, 0, 4)=='<div') echo "</div>\n";
 			return true;
 		}
 		else
