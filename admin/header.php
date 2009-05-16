@@ -9,11 +9,12 @@
  <link rel="stylesheet" type="text/css" href="<?=$Blog->adminrootpath; ?>/css/style.css" media="screen" />
 <? if(isset($_GET['site']) && $_GET['site'] == 'formular') { ?>
  <link rel="stylesheet" type="text/css" href="<?=$Blog->adminrootpath; ?>/css/editor.css" media="screen" />
+ <script type="text/javascript" src="<?=$Blog->adminrootpath; ?>/js/jquery.js"></script>
  <script type="text/javascript" src="<?=$Blog->adminrootpath; ?>/js/editor.js"></script>
- <script type="text/javascript" src="<?=$Blog->adminrootpath; ?>/js/prototype.js"></script>
-<? } ?>
+ <? } ?>
 <? if(isset($_GET['site']) &&  $_GET['site'] == 'pages_formular') { ?>
  <link rel="stylesheet" type="text/css" href="<?=$Blog->adminrootpath; ?>/css/editor.css" media="screen" />
+ <script type="text/javascript" src="<?=$Blog->adminrootpath; ?>/js/jquery.js"></script>
  <script type="text/javascript" src="<?=$Blog->adminrootpath; ?>/js/editor.js"></script>
 <? } ?>
 </head>
