@@ -138,7 +138,7 @@ class User
 		if($this->use_cookies)
 		{
 			@setcookie('devbird_user_name', base64_encode($this->name), time()+60*60*24*30, '/');
-			@setcookie('devbird_user_pw', base64_encode($this->password), time()+60*60*24*30, '/');
+			@setcookie('devbird_user_pw', base64_encode($this->password_hash), time()+60*60*24*30, '/');
  		}
     }
 
