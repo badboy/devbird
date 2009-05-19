@@ -148,7 +148,7 @@ if(!isset($hide_form) || !$hide_form) {
   <legend>Tags</legend>
   <p>
    <input type="text" name="article_tags" class="bigger_input" value="<?=$out_tags ?>" id="a_tags" />
-   <input type="button" value="Tags entfernen"  onclick="$('a_tags').value='';"/>
+   <input type="button" value="Tags entfernen" onclick="$('#a_tags').val('');" />
   </p>
   <p class="subinfo">Mehrere Tags mit einem Leerzeichen trennen</p>
   <p>Vorhandene Tags:<br />
