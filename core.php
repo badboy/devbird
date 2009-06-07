@@ -798,6 +798,8 @@ END;
 
 		$feed_title = $this->settings['Blogname'];
 		$feed_link = $this->settings['Bloglink'];
+		if($feed_link[strlen($feed_link)-1] != '/')
+			$feed_link .= '/';
 		$feed_desc = $this->settings['Blogbeschreibung'];
 
 		$user = 'devbird';
@@ -812,7 +814,7 @@ END;
 		echo "<feed xmlns=\"http://www.w3.org/2005/Atom\">\n";
 		echo " <title>{$feed_title}</title>\n";
 		echo " <link rel=\"alternate\" type=\"text/html\" href=\"{$feed_link}\"/>\n";
-		echo " <link rel=\"self\" type=\"application/atom+xml\" href=\"{$feed_link}/feed/atom\" />\n";
+		echo " <link rel=\"self\" type=\"application/atom+xml\" href=\"{$feed_link}feed/atom\" />\n";
 		echo " <author>\n";
 		echo "  <name>{$user}</name>\n";
 		echo " </author>\n";
@@ -839,7 +841,7 @@ END;
 
 			while(($news = $this->nextnews()))
 			{
-				$title = stripslashes($news->title);
+				$title = htmlspecialchars(stripslashes($news->title));
 				$date = $this->date3339($news->published);
 				$content = stripslashes($news->message);
 				$id = $news->id;
@@ -870,12 +872,14 @@ END;
 
 		$feed_title = $this->settings['Blogname'];
 		$feed_link = $this->settings['Bloglink'];
+		if($feed_link[strlen($feed_link)-1] != '/')
+			$feed_link .= '/';
 		$feed_desc = $this->settings['Blogbeschreibung'];
 
 		echo "<?xml version=\"1.0\" encoding=\"{$this->encoding}\" ?>\n";
 		echo "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n";
 		echo "<channel>\n";
-		echo " <atom:link href=\"{$feed_link}/feed.php\" rel=\"self\" type=\"application/rss+xml\" />\n";
+		echo " <atom:link href=\"{$feed_link}feed/rss\" rel=\"self\" type=\"application/rss+xml\" />\n";
 		echo " <title>{$feed_title}</title>\n";
 		echo " <link>{$feed_link}</link>\n";
 		echo " <description>{$feed_desc}</description>\n";
@@ -894,7 +898,7 @@ END;
 
 			while(($news = $this->nextnews()))
 			{
-				$title = stripslashes($news->title);
+				$title = htmlspecialchars(stripslashes($news->title));
 				$date = date("r",$news->published);
 				$content = stripslashes($news->message);
 				$id = $news->id;
